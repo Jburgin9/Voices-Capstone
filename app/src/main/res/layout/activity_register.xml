@@ -9,7 +9,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator_register"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"></android.support.design.widget.CoordinatorLayout>
 
     <EditText
         android:id="@+id/register_username_et"
@@ -41,6 +41,7 @@
         android:drawableStart="@drawable/ic_password"
         android:gravity="center"
         android:hint="@string/enter_password"
+        android:inputType="textPassword"
         android:padding="10dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="20sp"
@@ -54,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/accent_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
