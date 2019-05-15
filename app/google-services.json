@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "674874815811",
+    "firebase_url": "https://voicescapstone.firebaseio.com",
+    "project_id": "voicescapstone",
+    "storage_bucket": "voicescapstone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:674874815811:android:e193651e8c21f238",
+        "android_client_info": {
+          "package_name": "org.quietlip.voicescapstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "674874815811-o3fh4qgd13r4nlm42c18mturk6ac23o1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.quietlip.voicescapstone",
+            "certificate_hash": "ba5bd45a610863977f8c7efd5412a34cf8cd841d"
+          }
+        },
+        {
+          "client_id": "674874815811-8faskt56euki2mppg53m6vjlen1r9m3b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiwZDv-vcKlq8h3m5AMZNppsK45y7t_JQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "674874815811-8faskt56euki2mppg53m6vjlen1r9m3b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
