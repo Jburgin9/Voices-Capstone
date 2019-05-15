@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
-    tools:context=".SplashActivity">
+    tools:context=".views.SplashActivity">
 
     <ImageView
         android:id="@+id/voices_header"
@@ -35,11 +35,14 @@
         android:id="@+id/mouth_after"
         android:layout_width="wrap_content"
         android:layout_height="400dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="176dp"
         android:scaleType="centerCrop"
         android:src="@drawable/mouth_after"
         android:visibility="invisible"
-        tools:layout_editor_absoluteX="4dp"
-        tools:layout_editor_absoluteY="155dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/log_in_button"
@@ -48,8 +51,7 @@
         android:layout_marginTop="10dp"
         android:clickable="true"
         android:gravity="center_horizontal"
-        android:text="Log In"
-        android:onClick="logIn"
+        android:text="@string/login"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/gifImageView"
         app:layout_constraintHorizontal_bias="0.467"
@@ -66,7 +68,7 @@
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:gravity="center_horizontal"
-        android:text="Sign In"
+        android:text="@string/sign_up"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/mouth_after"
         app:layout_constraintHorizontal_bias="0.467"
