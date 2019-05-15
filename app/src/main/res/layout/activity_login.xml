@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignInActivity"
+    tools:context=".views.LoginActivity"
     android:background="@color/colorPrimary">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -34,7 +39,7 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/accent_border"
         android:gravity="center"
-        android:hint="Enter Username"
+        android:hint="@string/enter_username"
         android:padding="10dp"
         android:textSize="20sp"
         android:textColor="@color/colorPrimary"
@@ -51,7 +56,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="368dp"
         android:layout_marginEnd="20dp"
-        android:hint="Enter Password"
+        android:hint="@string/enter_password"
         android:textSize="20sp"
         android:padding="10dp"
         android:gravity="center"
@@ -70,7 +75,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="First time user"
+        android:text="@string/first_time_user"
         android:padding="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,7 +91,7 @@
         android:background="@drawable/accent_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Login"
+        android:text="@string/login"
         android:textSize="16sp"
         android:elevation="10dp"
         android:outlineAmbientShadowColor="@color/colorAccent"/>
