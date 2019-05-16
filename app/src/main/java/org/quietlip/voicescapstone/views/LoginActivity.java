@@ -61,8 +61,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.sign_up_tv:
                 startActivity(new Intent(this, RegisterActivity.class));
                 break;
-            case R.id.log_in_button:
-                helper.makeSnackie(coord,"home screen coming soon");
+            case R.id.login_btn:
+                login();
                 break;
         }
     }
@@ -79,27 +79,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     //login
     protected void login() {
-        String username = "";
-        String password = "";
+        String username = usernameInputET.getText().toString();
+        String password = passwordInputET.getText().toString();
 
-        if (!TextUtils.isEmpty(usernameInputET.getText())) {
-            username = usernameInputET.getText().toString();
-        }
-
-        if (!TextUtils.isEmpty(passwordInputET.getText())) {
-            password = passwordInputET.getText().toString();
-        }
-
-        loginAuth.signInWithEmailAndPassword(username, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //snackie: welcome beautiful
-                        } else {
-                            //snackie: chill -_- task.messag
+        if (!TextUtils.isEmpty(username)  && !TextUtils.isEmpty(password)) {
+            helper.makeFirelog(this, "title", "loading . . .");
+            loginAuth.signInWithEmailAndPassword(username, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                helper.dismissFirelog();
+                                helper.makeSnackie(coord, "success");
+                            } else {
+                                helper.dismissFirelog();
+                                helper.makeSnackie(coord, "failure");
+                            }
                         }
-                    }
-                });
+                    });
+        } else if (TextUtils.isEmpty(username)){
+            helper.makeSnackie(coord, "please enter username");
+        } else if (TextUtils.isEmpty(password)) {
+            helper.makeSnackie(coord, "please enter password");
+        }
     }
 }
