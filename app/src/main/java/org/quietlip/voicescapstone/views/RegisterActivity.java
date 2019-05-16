@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,33 +51,29 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser(){
-        String username= "";
-        String password = "";
+        String username = registerUsername.getText().toString();
+        String password = registerPassword.getText().toString();
 
-        if(!TextUtils.isEmpty(registerUsername.getText())){
-            username = registerUsername.getText().toString();
-        }
+        if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+            helper.makeFirelog(this, "Title", "we are loading");
+            registerAuth.createUserWithEmailAndPassword(username, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                helper.dismissFirelog();
+                                helper.makeSnackie(coord, "hello");
+                            } else {
+                                helper.dismissFirelog();
+                                helper.makeSnackie(coord, task.getException().toString());
+                            }
 
-        if(!TextUtils.isEmpty(registerPassword.getText())){
-            password = registerPassword.getText().toString();
-        }
-
-        registerAuth.createUserWithEmailAndPassword(username, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            //snackie: welcome
-                            helper.makeSnackie(coord, "hello");
                         }
-
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        helper.makeSnackie(coord, e.getMessage());
-                    }
-                });
+                    });
+        } else if(TextUtils.isEmpty(username)){
+            helper.makeSnackie(coord, "please enter a valid username");
+        } else if(TextUtils.isEmpty(password)){
+            helper.makeSnackie(coord, "please enter a valid password");
+        }
     }
 }
