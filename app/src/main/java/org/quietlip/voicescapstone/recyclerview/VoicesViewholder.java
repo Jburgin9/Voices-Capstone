@@ -16,8 +16,8 @@ public class VoicesViewholder extends RecyclerView.ViewHolder {
     public VoicesViewholder(@NonNull View itemView) {
         super(itemView);
 
-        play=itemView.findViewById(R.id.play);
-        title =itemView.findViewById(R.id.title);
+        play=itemView.findViewById(R.id.play_button_item_view);
+        title =itemView.findViewById(R.id.name_item_view);
     }
 
 
