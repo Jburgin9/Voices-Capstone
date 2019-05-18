@@ -14,15 +14,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".views.ProfileActivity">
+        </activity>
+        <activity android:name=".views.RecordActivity" />
+        <activity android:name=".views.RegisterActivity" />
+        <activity android:name=".views.SplashActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.RecordActivity" />
-        <activity android:name=".views.RegisterActivity" />
-        <activity android:name=".views.SplashActivity"></activity>
         <activity android:name=".views.LoginActivity" />
     </application>
 

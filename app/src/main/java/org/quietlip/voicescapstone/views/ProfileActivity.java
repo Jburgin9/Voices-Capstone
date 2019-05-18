@@ -21,6 +21,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView mic;
     private RecyclerView recyclerView;
     private BottomNavigationView navigation;
+    private TextView title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class ProfileActivity extends AppCompatActivity {
         soundwaveRight = findViewById(R.id.soundwave_right);
         mic = findViewById(R.id.mic);
         recyclerView = findViewById(R.id.recycler_view);
+        title = findViewById(R.id.title_item_view);
         navigation = findViewById(R.id.bottom_nav);
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

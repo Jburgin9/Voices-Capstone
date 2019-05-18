@@ -9,4 +9,5 @@
     <string name="first_time_user">First time user</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign Up</string>
+    <string name="title">Title</string>
 </resources>
