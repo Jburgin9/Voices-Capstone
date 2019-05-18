@@ -11,6 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"></android.support.design.widget.CoordinatorLayout>
 
+    <ImageView
+        android:id="@+id/logo_reg_iv"
+        android:layout_width="298dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="36dp"
+        android:src="@drawable/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.457"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/register_username_et"
         android:layout_width="match_parent"
