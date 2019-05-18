@@ -34,6 +34,7 @@
                 android:layout_marginTop="45dp"
                 android:layout_toRightOf="@+id/profile_image_item_view"
                 android:background="@color/colorPrimary"
+                android:onClick="startPlay"
                 android:src="@drawable/play_one" />
 
             <SeekBar
@@ -81,6 +82,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@id/soundwave_item_view"
+                android:onClick="recordAudio"
                 android:background="@color/colorPrimary"
                 android:src="@drawable/ic_mic_black_24dp" />
 
