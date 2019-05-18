@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (task.isSuccessful()) {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "success");
+                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
                             } else {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "failure");
