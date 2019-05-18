@@ -1,5 +1,6 @@
 package org.quietlip.voicescapstone.views;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -8,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,6 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth registerAuth;
     private Helper helper;
     private CoordinatorLayout coord;
+    private ImageView logoIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerAuth = FirebaseAuth.getInstance();
         helper = Helper.getInstance();
         coord = findViewById(R.id.coordinator_register);
+        logoIV = findViewById(R.id.logo_reg_iv);
     }
 
     private void registerUser(){
@@ -63,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "hello");
+                                startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
                             } else {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, task.getException().toString());
