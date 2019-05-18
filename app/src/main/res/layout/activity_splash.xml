@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
-    tools:context=".views.SplashActivity">
+    android:background="@color/colorPrimaryDark"
+    tools:context=".SplashActivity">
 
     <ImageView
         android:id="@+id/voices_header"
@@ -40,9 +40,11 @@
         android:layout_marginBottom="176dp"
         android:scaleType="centerCrop"
         android:src="@drawable/mouth_after"
+        app:layout_constraintLeft_toLeftOf="parent"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/gifImageView"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="155dp" />
 
     <Button
         android:id="@+id/log_in_button"
