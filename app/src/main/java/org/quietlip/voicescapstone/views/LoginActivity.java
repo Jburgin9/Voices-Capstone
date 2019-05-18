@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,9 +22,8 @@ import org.quietlip.voicescapstone.utilis.Helper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText usernameInputET, passwordInputET;
-    private Button loginBtn;
+    private Button loginBtn, signUpBTN;
     private ImageView logoIV;
-    private TextView signUpTV;
     private FirebaseAuth loginAuth;
     private Helper helper;
     private CoordinatorLayout coord;
@@ -37,8 +35,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         initViews();
 
-
-        signUpTV.setOnClickListener(this);
+        signUpBTN.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
     }
 
@@ -48,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordInputET = findViewById(R.id.password_et);
         loginBtn = findViewById(R.id.login_btn);
         logoIV = findViewById(R.id.logo_iv);
-        signUpTV = findViewById(R.id.sign_up_tv);
+        signUpBTN = findViewById(R.id.sign_up_btn);
         loginAuth = FirebaseAuth.getInstance();
         helper = Helper.getInstance();
         coord = findViewById(R.id.coordinator_login);
@@ -58,7 +55,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_up_tv:
+            case R.id.sign_up_btn:
                 startActivity(new Intent(this, RegisterActivity.class));
                 break;
             case R.id.login_btn:
