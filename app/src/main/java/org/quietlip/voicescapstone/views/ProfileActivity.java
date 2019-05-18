@@ -14,6 +14,7 @@ import org.quietlip.voicescapstone.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
 public class ProfileActivity extends AppCompatActivity {
     private CircleImageView profile_pic;
     private ImageView soundwave;

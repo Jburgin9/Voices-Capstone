@@ -11,7 +11,7 @@ import org.quietlip.voicescapstone.models.AudioModel;
 
 import java.util.List;
 
-public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewholder> {
+public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     List<AudioModel> audioList;
 
     public VoicesAdapter(List<AudioModel> audioList) {
@@ -20,14 +20,15 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewholder> {
 
     @NonNull
     @Override
-    public VoicesViewholder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public VoicesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_recycler,viewGroup,false);
-        return new VoicesViewholder(view);
+        return new VoicesViewHolder(view);
+
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VoicesViewholder voicesViewholder, int i) {
-voicesViewholder.onBind(audioList.get(i));
+    public void onBindViewHolder(@NonNull VoicesViewHolder voicesViewHolder, int i) {
+        voicesViewHolder.onBind(audioList.get(i));
     }
 
     @Override
