@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimaryDark"
+    tools:context=".SplashActivity">
 
     <ImageView
         android:id="@+id/voices_header"
@@ -32,4 +33,53 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/voices_header" />
 
+
+</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/mouth_after"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="176dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/mouth_after"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/gifImageView"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="155dp" />
+
+    <Button
+        android:id="@+id/log_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:clickable="true"
+        android:gravity="center_horizontal"
+        android:text="@string/login"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/gifImageView"
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/gifImageView"
+        app:layout_constraintVertical_bias="0.394" />
+
+    <Button
+        android:id="@+id/sign_up_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:gravity="center_horizontal"
+        android:text="@string/sign_up"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/mouth_after"
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/log_in_button"
+        app:layout_constraintVertical_bias="0.042" />
 </android.support.constraint.ConstraintLayout>
