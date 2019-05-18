@@ -9,20 +9,19 @@ import android.widget.TextView;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 
-public class VoicesViewholder extends RecyclerView.ViewHolder {
+public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private Button play;
     private TextView title;
 
-    public VoicesViewholder(@NonNull View itemView) {
+
+
+    public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
+     play = itemView.findViewById(R.id.play_button_item_view);
+    title = itemView.findViewById(R.id.title);
 
-        play=itemView.findViewById(R.id.play_button_item_view);
-        title =itemView.findViewById(R.id.title);
-    }
-
-
-
-    public void onBind(AudioModel audio){
+}
+    public void onBind(AudioModel audio) {
         title.setText(audio.getAudioTitle());
         play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,4 +31,3 @@ public class VoicesViewholder extends RecyclerView.ViewHolder {
         });
     }
 }
-

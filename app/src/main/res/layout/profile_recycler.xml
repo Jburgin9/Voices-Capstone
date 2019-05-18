@@ -17,7 +17,10 @@
         android:layout_toLeftOf="@+id/profile_image"
         android:src="@drawable/soundwave" />
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/profile_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
