@@ -15,7 +15,6 @@ import pl.droidsonroids.gif.GifImageView;
 public class SplashActivity extends AppCompatActivity {
     private ImageView voicesHeader;
     private GifImageView splash_image;
-    private ImageView mouth_after;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
