@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +18,7 @@ import org.quietlip.voicescapstone.R;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -50,6 +50,14 @@ public class ProfileActivity extends AppCompatActivity {
         audioFile = getExternalCacheDir().getAbsolutePath();
 
 
+
+        mic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent recordintent = new Intent(ProfileActivity.this, RecordActivity.class);
+                startActivity(recordintent);
+            }
+        });
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
