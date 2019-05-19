@@ -70,6 +70,10 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        app:labelVisibilityMode="labeled"
+        app:itemTextColor="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        app:itemIconTint="@color/colorPrimaryDark"
         android:layout_alignParentBottom="true"
         app:menu="@menu/nav_bottom_tabs" />
 </RelativeLayout>
