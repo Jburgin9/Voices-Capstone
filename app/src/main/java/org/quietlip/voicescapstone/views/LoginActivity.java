@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = passwordInputET.getText().toString();
 
         if (!TextUtils.isEmpty(username)  && !TextUtils.isEmpty(password)) {
-            helper.makeFirelog(this, "title", "loading . . .");
+            helper.makeFirelog(this, "", "loading . . .");
             loginAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override

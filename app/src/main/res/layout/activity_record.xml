@@ -24,46 +24,41 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <ImageButton
+    <ImageView
         android:id="@+id/play_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="47dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="64dp"
+        android:background="@color/colorPrimary"
         android:src="@drawable/play_one"
         app:layout_constraintEnd_toStartOf="@+id/progress_bar"
+        app:layout_constraintHorizontal_bias="0.808"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/record_button" />
 
     <SeekBar
         android:id="@+id/progress_bar"
-        android:layout_width="245dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="36dp"
+        android:layout_width="229dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="88dp"
+        android:background="@drawable/accent_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/record_button" />
 
-    <TextView
-        android:id="@+id/enter_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:text="Enter Title:"
-        app:layout_constraintEnd_toStartOf="@+id/title_input"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play_button" />
 
     <EditText
         android:id="@+id/title_input"
         android:layout_width="153dp"
         android:layout_height="30dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="108dp"
+        android:hint="ENTER TITLE"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="112dp"
+        android:background="@drawable/accent_border"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.876"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
 
     <Button
@@ -74,13 +69,16 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/accent_border"
         android:text="Post"
+        android:textColor="@color/colorAccent"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_input"
-        app:layout_constraintVertical_bias="0.355" />
+        app:layout_constraintVertical_bias="0.115" />
 
 
 

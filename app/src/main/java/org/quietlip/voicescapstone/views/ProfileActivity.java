@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
 //        friends.setImageResource(R.drawable.ic_people_black_24dp);
 //        ImageView settings = findViewById(R.id.settings_tab);
 //        settings.setImageResource(R.drawable.ic_settings_black_24dp);
+
         profile_pic = findViewById(R.id.profile_image);
         soundwave = findViewById(R.id.soundwave_left);
         soundwaveRight = findViewById(R.id.soundwave_right);
@@ -43,6 +45,14 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.title_item_view);
         navigation = findViewById(R.id.bottom_nav);
+
+        mic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent recordintent = new Intent(ProfileActivity.this, RecordActivity.class);
+                startActivity(recordintent);
+            }
+        });
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
