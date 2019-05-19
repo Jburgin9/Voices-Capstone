@@ -28,7 +28,6 @@ public class RecordActivity extends AppCompatActivity {
     private ImageButton record;
     private ImageButton play;
     private Button post;
-    private TextView enterTitle;
     private EditText titleInput;
 
     private static String audioFile;
@@ -50,7 +49,6 @@ public class RecordActivity extends AppCompatActivity {
         record = findViewById(R.id.record_button);
         play = findViewById(R.id.play_button);
         post = findViewById(R.id.post_button);
-        enterTitle = findViewById(R.id.enter_title);
         titleInput = findViewById(R.id.title_input);
 
         audioFile = getExternalCacheDir().getAbsolutePath();

@@ -10,7 +10,7 @@
         android:id="@+id/voices_header"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_margin="5dp"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/voices_header_black"
         app:layout_constraintBottom_toTopOf="@+id/gifImageView"
