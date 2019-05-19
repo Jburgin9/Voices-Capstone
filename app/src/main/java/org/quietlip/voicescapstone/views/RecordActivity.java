@@ -1,6 +1,7 @@
 package org.quietlip.voicescapstone.views;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -9,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -40,6 +43,7 @@ public class RecordActivity extends AppCompatActivity {
     private boolean permissionToRecordAccepted = false;
     private String[] permissions = {Manifest.permission.RECORD_AUDIO};
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +58,20 @@ public class RecordActivity extends AppCompatActivity {
 
         audioFile = getExternalCacheDir().getAbsolutePath();
 //        audioFile += title+ format;  giving audio title?
+
+        record.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+               if(event.getAction()== MotionEvent.ACTION_DOWN){
+                   startRecording();
+
+                }else if (event.getAction() == MotionEvent.ACTION_UP){
+                   stopRecording();
+
+                }
+                return false;
+            }
+        });
 
 
     }
