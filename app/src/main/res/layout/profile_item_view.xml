@@ -24,6 +24,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="16dp"
                 android:src="@drawable/linda"
                 app:civ_border_color="@color/colorAccent"
                 app:civ_border_width="2dp" />
@@ -32,20 +33,23 @@
                 android:id="@+id/play_button_item_view"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="-3dp"
-                android:layout_marginTop="45dp"
-                android:layout_marginBottom="15dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="42dp"
+                android:layout_marginBottom="25dp"
                 android:layout_toRightOf="@+id/profile_image_item_view"
                 android:background="@color/colorPrimary"
+                android:onClick="startPlay"
                 android:src="@drawable/play_one" />
 
             <SeekBar
                 android:id="@+id/soundwave_item_view"
-                android:layout_width="203dp"
-                android:layout_height="33dp"
+                android:layout_width="200dp"
+                android:layout_height="32dp"
+
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
+
                 android:layout_marginRight="15dp"
                 android:layout_toRightOf="@+id/play_button_item_view"
                 android:background="@drawable/accent_border"
@@ -55,9 +59,12 @@
                 android:id="@+id/like_button_item_view"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="25dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginTop="9dp"
+                android:layout_marginEnd="12dp"
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@id/soundwave_item_view"
                 android:background="@color/colorPrimary"
@@ -83,9 +90,13 @@
                 android:layout_below="@id/like_button_item_view"
                 android:layout_alignParentEnd="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="-5dp"
+                android:layout_marginEnd="9dp"
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@id/soundwave_item_view"
                 android:background="@color/colorPrimary"
+                android:onClick="recordAudio"
                 android:src="@drawable/ic_mic_black_24dp" />
 
             <TextView
@@ -93,11 +104,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/soundwave_item_view"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginLeft="220dp"
+                android:layout_marginTop="3dp"
+
                 android:text="@string/title"
-                android:gravity="center"
                 android:textColor="@color/colorAccent"
                 android:textSize="30sp"
                 android:textStyle="bold" />

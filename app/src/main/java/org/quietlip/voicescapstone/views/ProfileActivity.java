@@ -1,6 +1,8 @@
 package org.quietlip.voicescapstone.views;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +15,16 @@ import android.widget.TextView;
 
 import org.quietlip.voicescapstone.R;
 
+import java.io.IOException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ProfileActivity extends AppCompatActivity {
+
+    private MediaPlayer player;
+    private ImageButton play;
+
     private CircleImageView profile_pic;
     private ImageView soundwave;
     private ImageView soundwaveRight;
@@ -24,20 +32,13 @@ public class ProfileActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private BottomNavigationView navigation;
     private TextView title;
+    private static String audioFile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_recycler);
-//        ImageView home = findViewById(R.id.home_tab);
-//        home.setImageResource(R.drawable.ic_home_black_24dp);
-//        ImageView profile = findViewById(R.id.profile_tab);
-//        profile.setImageResource(R.drawable.ic_person_black_24dp);
-//        ImageView friends = findViewById(R.id.friends_tab);
-//        friends.setImageResource(R.drawable.ic_people_black_24dp);
-//        ImageView settings = findViewById(R.id.settings_tab);
-//        settings.setImageResource(R.drawable.ic_settings_black_24dp);
-
         profile_pic = findViewById(R.id.profile_image);
         soundwave = findViewById(R.id.soundwave_left);
         soundwaveRight = findViewById(R.id.soundwave_right);
@@ -45,6 +46,10 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.title_item_view);
         navigation = findViewById(R.id.bottom_nav);
+        play = findViewById(R.id.play_button_item_view);
+        audioFile = getExternalCacheDir().getAbsolutePath();
+
+
 
         mic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,19 +64,47 @@ public class ProfileActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.home_tab:
-                        Intent a = new Intent(ProfileActivity.this,ProfileActivity.class);
-                        startActivity(a);
+                        Intent homeIntent = new Intent(ProfileActivity.this,ProfileActivity.class);
+                        startActivity(homeIntent);
                         break;
                     case R.id.profile_tab:
+                        Intent profileIntent = new Intent(ProfileActivity.this, RecordActivity.class);
+                        startActivity(profileIntent);
                         break;
                     case R.id.friends_tab:
-                        Intent b = new Intent(ProfileActivity.this,RegisterActivity.class);
-                        startActivity(b);
-
+                        Intent friendsIntent = new Intent(ProfileActivity.this,RegisterActivity.class);
+                        startActivity(friendsIntent);
+                        break;
+                    case R.id.settings_tab:
+                        Intent settingsIntent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        startActivity(settingsIntent);
                         break;
                 }
                 return true;
             }
         });
     }
-}
+
+    public void recordAudio(View view) {
+        Intent recordIntent = new Intent(ProfileActivity.this, RecordActivity.class);
+        startActivity(recordIntent);
+    }
+
+
+    public void startPlay(View view) {
+            player = new MediaPlayer();
+            try {
+                player.setDataSource(audioFile);
+                player.prepare();
+                player.start();
+            } catch (IOException e) {
+//                Log.e(LOG_TAG, "prepare() failed");
+            }
+        }
+
+        private void stopPlaying() {
+            player.release();
+            player = null;
+        }
+    }
+
