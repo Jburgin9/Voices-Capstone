@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
         String password = registerPassword.getText().toString();
 
         if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-            helper.makeFirelog(this, "Title", "we are loading");
+            helper.makeFirelog(this, "", "loading...");
             registerAuth.createUserWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override

@@ -1,22 +1,27 @@
 package org.quietlip.voicescapstone.models;
 
 public class AudioModel {
-    private String audioFile;
-    private String audioTitle;
+    private String uri;
+    private String title;
 
-    public String getAudioFile() {
-        return audioFile;
+    public AudioModel(String uri, String audioTitle) {
+        this.uri = uri;
+        this.title = audioTitle;
     }
 
-    public void setAudioFile(String audioFile) {
-        this.audioFile = audioFile;
+    public String getUri() {
+        return uri;
     }
 
-    public String getAudioTitle() {
-        return audioTitle;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
-    public void setAudioTitle(String audioTitle) {
-        this.audioTitle = audioTitle;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
