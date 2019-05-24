@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "674874815811-p9eb558q82ptctd74jjn9dpuo0rf832f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.quietlip.voicescapstone",
+            "certificate_hash": "e24472c4eaf8978a0f5c0607a0de7bdeb9ed5e21"
+          }
+        },
+        {
           "client_id": "674874815811-o3fh4qgd13r4nlm42c18mturk6ac23o1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

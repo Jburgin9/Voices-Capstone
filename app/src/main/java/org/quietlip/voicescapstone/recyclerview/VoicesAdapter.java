@@ -21,7 +21,7 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     @NonNull
     @Override
     public VoicesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_recycler,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_item_view,viewGroup,false);
         return new VoicesViewHolder(view);
 
     }
