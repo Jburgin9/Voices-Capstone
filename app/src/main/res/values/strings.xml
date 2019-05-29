@@ -10,4 +10,7 @@
     <string name="login">Login</string>
     <string name="sign_up">Sign Up</string>
     <string name="title">TITLE</string>
+    <string name="settings">Settings</string>
+    <string name="settings_prompt">Thank you for joining our Voices community, where your voice is heard. Please personalize your photo by clicking above and add a brief description about yourself below. Thank you, and enjoy!</string>
+    <string name="about_me">About Me</string>
 </resources>
