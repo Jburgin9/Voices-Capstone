@@ -6,26 +6,36 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.model.User;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 public class RegisterActivity extends AppCompatActivity {
-    private EditText registerUsername, registerPassword;
+    public static final String DOC_ONE = "Profile Info";
+    private static final String TAG = "PROUD";
+    private EditText registerEmail, registerPassword, registerUsername;
     private Button createAccountBtn;
     private FirebaseAuth registerAuth;
     private Helper helper;
     private CoordinatorLayout coord;
     private ImageView logoIV;
+    private FirebaseFirestore firestore;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,36 +56,60 @@ public class RegisterActivity extends AppCompatActivity {
     //init views & necessary components
     private void initComps(){
         registerPassword = findViewById(R.id.register_password_et);
-        registerUsername = findViewById(R.id.register_username_et);
+        registerEmail = findViewById(R.id.register_email_et);
         createAccountBtn = findViewById(R.id.create_account_btn);
+        registerUsername = findViewById(R.id.register_username_et);
         registerAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         helper = Helper.getInstance();
         coord = findViewById(R.id.coordinator_register);
         logoIV = findViewById(R.id.logo_reg_iv);
+        user = registerAuth.getCurrentUser();
     }
 
     private void registerUser(){
-        String username = registerUsername.getText().toString();
-        String password = registerPassword.getText().toString();
+        Log.d(TAG, "registerUser: ");
+        final String email = registerEmail.getText().toString();
+        final String password = registerPassword.getText().toString();
+        final String username = registerUsername.getText().toString();
 
-        if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+        if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
             helper.makeFirelog(this, "", "loading...");
-            registerAuth.createUserWithEmailAndPassword(username, password)
+            registerAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: ");
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "hello");
                                 startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
                             } else {
+
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, task.getException().toString());
                             }
 
                         }
-                    });
-        } else if(TextUtils.isEmpty(username)){
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "onFailure: " + e.getMessage());
+                }
+            });
+            User userOne = new User(username, user.getUid());
+            firestore.collection(userOne.getUserID()).document(DOC_ONE).set(userOne).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "onFailure: " + e.getMessage());
+                }
+            });
+        } else if(TextUtils.isEmpty(email)){
             helper.makeSnackie(coord, "please enter a valid username");
         } else if(TextUtils.isEmpty(password)){
             helper.makeSnackie(coord, "please enter a valid password");
