@@ -8,52 +8,56 @@
     android:background="@color/colorPrimary"
     tools:context=".views.ProfileActivity">
 
+    <ImageView
+        android:id="@+id/soundwave_left"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@+id/voices_header"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="0dp"
+        android:layout_toLeftOf="@+id/profile_image"
+        android:src="@drawable/soundwave" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/profile_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:src="@drawable/linda"
-        app:civ_border_color="@color/colorPrimaryDark"
+        app:civ_border_color="@color/colorAccent"
         app:civ_border_width="2dp" />
 
-    <TextView
-        android:id="@+id/user_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="170dp"
-        android:text="User ID"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="20dp" />
+    <ImageView
+        android:id="@+id/soundwave_right"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/profile_image"
+        android:src="@drawable/soundwave" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/record_button"
-        android:layout_width="131dp"
-        android:layout_height="142dp"
-        android:layout_marginLeft="165dp"
-        android:layout_marginTop="0dp"
-        android:background="@color/colorWhite"
-        android:elevation="10dp"
-        android:layout_below="@+id/user_id"
+    <ImageView
+        android:id="@+id/mic"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/profile_image"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/record_mic" />
-
+        android:layout_marginTop="5dp"
+        android:clickable="true"
+        android:src="@drawable/mic" />
 
     <FrameLayout
         android:id="@+id/recycler_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/record_button"
+        android:layout_below="@+id/mic"
         android:background="@color/colorAccent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/colorPrimary">
 
         </android.support.v7.widget.RecyclerView>
@@ -64,10 +68,10 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        app:labelVisibilityMode="labeled"
-        app:itemTextColor="@color/colorPrimaryDark"
-        android:elevation="4dp"
-        app:itemIconTint="@color/colorPrimaryDark"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/nav_bottom_tabs" />
 </RelativeLayout>
