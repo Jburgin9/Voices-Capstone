@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
 
-            firestore.collection(userOne.g).document(DOC_ONE).set(userOne).addOnSuccessListener(new OnSuccessListener<Void>() {
+            firestore.collection(user.getUid()).document(DOC_ONE).set(DOC_ONE).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -171,7 +171,6 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     //snackie happy
-                    User userTwo = new User()
 
                 }
             }).addOnFailureListener(new OnFailureListener() {

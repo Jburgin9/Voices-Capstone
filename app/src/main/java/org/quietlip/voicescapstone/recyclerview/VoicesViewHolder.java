@@ -55,20 +55,14 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
 
-            }
-            });
-        }
-
-}
 //                int position = getAdapterPosition();
-//                mediaPlayer = MediaPlayer.create(v.getContext(), audioList[position]);
+//                mediaPlayer = MediaPlayer.create(v.getContext(),AudioModel<>audioList[position]);
 //                mediaPlayer.start();
 //                mediaPlayer.setDataSource(audioFile);
 //                mediaPlayer.prepare();
 //                startPlaying();
 //
 //            }
-//
 //            private void startPlaying() {
 //                mediaPlayer = new MediaPlayer();
 //                try {
@@ -78,4 +72,12 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 //                } catch (IOException e) {
 ////                    Log.e(LOG_TAG, "prepare() failed");
 //                }
-//            }
+            }
+
+            });
+        }
+
+}
+
+
+
