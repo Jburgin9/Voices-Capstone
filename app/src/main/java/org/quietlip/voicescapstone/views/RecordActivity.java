@@ -39,6 +39,9 @@ import java.util.Date;
 
 public class RecordActivity extends AppCompatActivity {
 
+    String users = "users";
+    String userlist = "userlist";
+
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
 
@@ -81,7 +84,7 @@ public class RecordActivity extends AppCompatActivity {
         titleInput = findViewById(R.id.title_input);
 
         audioFile = getExternalCacheDir().getAbsolutePath();
-        audioFile += "/recorded_audio.3gp";
+        audioFile += System.currentTimeMillis() + "_recorded_audio.3gp";
         setRecordAudioOnClick();
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
@@ -92,7 +95,8 @@ public class RecordActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchAudioUrlFromFirebase();
+                //fetchAudioUrlFromFirebase();
+                stopRecording();
             }
         });
     }
@@ -153,7 +157,7 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString());
-                db.collection(currentUserUID).document("uploads").collection("audiolist")
+                db.collection(users).document(currentUserUID).collection("audio")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
@@ -186,8 +190,6 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 try {
-                    // Download url of file
-                    final String url = uri.toString();
                     mediaPlayer.setVolume(1, 1);
                     mediaPlayer.setDataSource(getApplicationContext(), uri);
                     // wait for media player to get prepare

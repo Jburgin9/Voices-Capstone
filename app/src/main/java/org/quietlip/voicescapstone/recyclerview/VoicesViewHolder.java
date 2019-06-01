@@ -1,5 +1,6 @@
 package org.quietlip.voicescapstone.recyclerview;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -32,50 +33,37 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
-    private static String audioFile;
-
     private AppCompatImageButton play;
-
     private TextView title;
-
     private MediaPlayer mediaPlayer;
-
-    List<AudioModel> audioList;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
         play = itemView.findViewById(R.id.play_button_item_view);
         title = itemView.findViewById(R.id.title_item_view);
-
     }
 
-    public void onBind(AudioModel audio) {
+    public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-//                int position = getAdapterPosition();
-//                mediaPlayer = MediaPlayer.create(v.getContext(),AudioModel<>audioList[position]);
-//                mediaPlayer.start();
-//                mediaPlayer.setDataSource(audioFile);
-//                mediaPlayer.prepare();
-//                startPlaying();
-//
-//            }
-//            private void startPlaying() {
-//                mediaPlayer = new MediaPlayer();
-//                try {
-//                    mediaPlayer.setDataSource(audioFile);
-//                    mediaPlayer.prepare();
-//                    mediaPlayer.start();
-//                } catch (IOException e) {
-////                    Log.e(LOG_TAG, "prepare() failed");
-//                }
+                startPlaying(itemView.getContext(),Uri.parse(audio.getUri()));
             }
+        });
+    }
 
-            });
+    private void startPlaying(Context context, Uri audio) {
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(context,audio);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            Log.d("VIEW HOLDER",String.valueOf(mediaPlayer.isPlaying()));
+        } catch (IOException e) {
+            Log.e("VIEW HOLDER", "prepare() failed");
         }
+    }
 
 }
 

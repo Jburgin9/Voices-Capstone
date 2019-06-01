@@ -120,7 +120,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void getListfromdb() {
-        db.collection(currentUserUID).document("uploads").collection("audiolist")
+        db.collection("users").document(currentUserUID).collection("audio")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
