@@ -1,6 +1,5 @@
 package org.quietlip.voicescapstone.views;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,12 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +28,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,9 +46,10 @@ public class RegisterActivity extends AppCompatActivity {
     private ImageView logoIV;
     private FirebaseFirestore firestore;
     private CircleImageView profileImage;
-    private FirebaseUser user;
+    private FirebaseUser fireUser;
     private StorageReference storage;
     private Uri imageUri;
+    private UserModel user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +81,12 @@ public class RegisterActivity extends AppCompatActivity {
         createAccountBtn = findViewById(R.id.create_account_btn);
         registerUsername = findViewById(R.id.register_username_et);
         registerAuth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance();
         helper = Helper.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         coord = findViewById(R.id.coordinator_register);
         logoIV = findViewById(R.id.logo_reg_iv);
-        user = registerAuth.getCurrentUser();
         profileImage = findViewById(R.id.profile_image);
-        storage = FirebaseStorage.getInstance().getReference(user.getUid()).child(DOC_PHOTO);
+        fireUser = registerAuth.getCurrentUser();
     }
 
     private void registerUser(){
@@ -105,15 +103,20 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: ");
+                                storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
                                 helper.dismissFirelog();
-                                helper.makeSnackie(coord, "hello");
-                                startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
+                                uploadFile();
+                                user = new UserModel(username, registerAuth.getCurrentUser().getUid());
+                                firestore.collection(fireUser.getUid()).document(DOC_ONE).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
+                                    }
+                                });
                             } else {
-
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, task.getException().toString());
                             }
-
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -121,23 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.d(TAG, "onFailure: " + e.getMessage());
                 }
             });
-
-            firestore.collection(user.getUid()).document(DOC_ONE).set(DOC_ONE).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: " + e.getMessage());
-                }
-            });
-        } else if(TextUtils.isEmpty(email)){
-            helper.makeSnackie(coord, "please enter a valid username");
-        } else if(TextUtils.isEmpty(password)){
-            helper.makeSnackie(coord, "please enter a valid password");
-        }
+           }
     }
 
     private void imageChoser(){
@@ -159,13 +146,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private String getFileExtension(Uri uri){
-        ContentResolver resolver = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(resolver.getType(uri));
-    }
 
-    private void uploadFIle(){
+    private void uploadFile(){
         if(imageUri != null){
             storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override

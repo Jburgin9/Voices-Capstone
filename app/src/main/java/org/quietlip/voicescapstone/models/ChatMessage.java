@@ -1,4 +1,4 @@
-package org.quietlip.voicescapstone.model;
+package org.quietlip.voicescapstone.models;
 
 import java.util.Date;
 
