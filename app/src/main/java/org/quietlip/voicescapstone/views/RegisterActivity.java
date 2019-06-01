@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -50,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
     private StorageReference storage;
     private Uri imageUri;
     private UserModel user;
+    private TextView uploadImageTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        profileImage.setOnClickListener(new View.OnClickListener() {
+        uploadImageTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             imageChoser();
@@ -87,6 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
         logoIV = findViewById(R.id.logo_reg_iv);
         profileImage = findViewById(R.id.profile_image);
         fireUser = registerAuth.getCurrentUser();
+        uploadImageTv = findViewById(R.id.upload_image_tv);
     }
 
     private void registerUser(){
