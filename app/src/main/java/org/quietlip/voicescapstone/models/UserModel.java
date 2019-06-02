@@ -2,25 +2,76 @@ package org.quietlip.voicescapstone.models;
 
 import android.net.Uri;
 
-public class UserModel {
-    private String username;
-    private Uri imageUrl;
-    private String userID;
+import java.util.List;
 
-    public String getUsername() {
-        return username;
+public class UserModel {
+    private String userId;
+    private String userName;
+    private Uri imageUrl;
+    private String aboutMe;
+    private List<AudioModel> audioList;
+    private List<UserModel> friendsList;
+
+   public UserModel(String userName , String userId) {
+
+        this.userName = userName;
+        this.userId = userId;
+    }
+
+    public UserModel(String userId, String userName, Uri imageUrl , String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
+        this.userId = userId;
+        this.userName = userName;
+        this.imageUrl = imageUrl;
+        this.aboutMe = aboutMe;
+        this.audioList = audioList;
+        this.friendsList = friendsList;
     }
 
     public Uri getImageUrl() {
         return imageUrl;
     }
 
-    public UserModel(String username, String userID) {
-        this.username = username;
-        this.userID = userID;
+    public void setImageUrl(Uri imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public List<UserModel> getFriendsList() {
+        return friendsList;
+    }
+
+    public void setFriendsList(List<UserModel> friendsList) {
+        this.friendsList = friendsList;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
+    }
+
+    public List<AudioModel> getAudioList() {
+        return audioList;
+    }
+
+    public void setAudioList(List<AudioModel> audioList) {
+        this.audioList = audioList;
     }
 }

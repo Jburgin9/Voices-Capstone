@@ -9,16 +9,19 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,21 +36,33 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RecordActivity extends AppCompatActivity {
+import de.hdodenhof.circleimageview.CircleImageView;
+import io.opencensus.tags.Tag;
 
+public class RecordActivity extends BaseActivity {
+
+    String users = "users";
+    String userlist = "userlist";
+
+    private BottomNavigationView navigation;
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
 
-    private ImageButton record;
+    private CircleImageView record;
     private ImageView play;
     private Button post;
     private EditText titleInput;
 
+    private boolean mPlay = true;
+    private boolean mrecord = true;
+
     private RecordActivity recordActivity;
+
 
     private static String audioFile;
     private final String audioFolderName = "audio";
@@ -73,7 +88,13 @@ public class RecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         progressDialog = new ProgressDialog(this);
         setContentView(R.layout.activity_record);
+
+        navigation = findViewById(R.id.bottom_nav);
+        setBottomNav(navigation);
+
+
         recordActivity = this;
+
 
         record = findViewById(R.id.record_button1);
         play = findViewById(R.id.play_button);
@@ -81,7 +102,8 @@ public class RecordActivity extends AppCompatActivity {
         titleInput = findViewById(R.id.title_input);
 
         audioFile = getExternalCacheDir().getAbsolutePath();
-        audioFile += "/recorded_audio.3gp";
+        audioFile += System.currentTimeMillis() + "_recorded_audio.3gp";
+        askPermission();
         setRecordAudioOnClick();
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
@@ -92,8 +114,19 @@ public class RecordActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchAudioUrlFromFirebase();
+//                stopRecording();
+
+                if (mPlay) {
+                    play.setImageResource(R.drawable.stop);
+                    startPlaying();
+                } else {
+                    play.setImageResource(R.drawable.play_button);
+                    stopPlaying();
+                }
+                mPlay = !mPlay;
             }
+
+            //                fetchAudioUrlFromFirebase();
         });
     }
 
@@ -106,25 +139,44 @@ public class RecordActivity extends AppCompatActivity {
         });
     }
 
-    private void setRecordAudioOnClick() {
-        record.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
-                                2);
-                    } else {
-                        startRecording();
-                    }
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    stopRecording();
+    private void askPermission() {
+        if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+           ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
+                   2);
+        }
+        //else do something
+    }
 
+    private void setRecordAudioOnClick() {
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mrecord) {
+                    record.setImageResource(R.drawable.recordon3);
+                    startRecording();
+                } else {
+                    record.setImageResource(R.drawable.recordoff2);
+
+                    stopRecording();
                 }
-                return false;
+                mrecord = !mrecord;
             }
         });
     }
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//                        ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
+//                                2);
+//                    } else {
+//                        startRecording();
+//                    }
+//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+////                    stopRecording();
+//
+//                }
+//                return false;
 
 
     private void goToProfile() {
@@ -153,7 +205,7 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString());
-                db.collection(currentUserUID).document("uploads").collection("audiolist")
+                db.collection(users).document(currentUserUID).collection("audio")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
@@ -178,40 +230,38 @@ public class RecordActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchAudioUrlFromFirebase() {
-        final FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Create a storage reference from our app
-        StorageReference storageRef = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
-        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                try {
-                    // Download url of file
-                    final String url = uri.toString();
-                    mediaPlayer.setVolume(1, 1);
-                    mediaPlayer.setDataSource(getApplicationContext(), uri);
-                    // wait for media player to get prepare
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            mediaPlayer.start();
-                        }
-                    });
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("TAG", e.getMessage());
-                    }
-                });
-
-    }
+//    private void fetchAudioUrlFromFirebase() {
+//        final FirebaseStorage storage = FirebaseStorage.getInstance();
+//        // Create a storage reference from our app
+//        StorageReference storageRef = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
+//        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//                try {
+//                    mediaPlayer.setVolume(1, 1);
+//                    mediaPlayer.setDataSource(getApplicationContext(), uri);
+//                    // wait for media player to get prepare
+//                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//                        @Override
+//                        public void onPrepared(MediaPlayer mediaPlayer) {
+//                            mediaPlayer.start();
+//                        }
+//                    });
+//                    mediaPlayer.prepareAsync();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.i("TAG", e.getMessage());
+//                    }
+//                });
+//
+//    }
 
     @Override
     public void onStop() {
@@ -242,10 +292,16 @@ public class RecordActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(audioFile);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mediaPlayer.start();
+                }
+            });
+            mediaPlayer.prepareAsync();
+
         } catch (IOException e) {
-//                Log.e(LOG_TAG, "prepare() failed");
+            Log.e("play", "prepare() failed");
         }
     }
 
@@ -280,9 +336,10 @@ public class RecordActivity extends AppCompatActivity {
             mediaRecorder = null;
 
         } catch (RuntimeException stopException) {
-            String y = "";
+            Log.e("stoprecord", "failed");
         }
-
     }
+
 }
+
 
