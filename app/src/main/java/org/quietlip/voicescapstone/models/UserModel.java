@@ -1,23 +1,38 @@
 package org.quietlip.voicescapstone.models;
 
+import android.net.Uri;
+
 import java.util.List;
 
 public class UserModel {
     private String userId;
     private String userName;
-    private String profilePicture;
+    private Uri imageUrl;
     private String aboutMe;
     private List<AudioModel> audioList;
     private List<UserModel> friendsList;
 
+   public UserModel(String userName , String userId) {
 
-    public UserModel(String userId, String userName, String profilePicture, String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
+        this.userName = userName;
+        this.userId = userId;
+    }
+
+    public UserModel(String userId, String userName, Uri imageUrl , String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
         this.userId = userId;
         this.userName = userName;
-        this.profilePicture = profilePicture;
+        this.imageUrl = imageUrl;
         this.aboutMe = aboutMe;
         this.audioList = audioList;
         this.friendsList = friendsList;
+    }
+
+    public Uri getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(Uri imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getUserId() {
@@ -42,14 +57,6 @@ public class UserModel {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
     }
 
     public String getAboutMe() {

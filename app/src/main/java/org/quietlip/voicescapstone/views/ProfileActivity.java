@@ -1,5 +1,6 @@
 package org.quietlip.voicescapstone.views;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +36,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
     private ImageButton play;
 
@@ -61,6 +63,8 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_recycler);
+        navigation = findViewById(R.id.bottom_nav);
+        setBottomNav(navigation);
         profile_pic = findViewById(R.id.profile_image);
 
         mic = findViewById(R.id.mic);
@@ -68,16 +72,21 @@ public class ProfileActivity extends AppCompatActivity {
         recordButton = findViewById(R.id.mic);
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.title_item_view);
-        navigation = findViewById(R.id.bottom_nav);
+
         play = findViewById(R.id.play_button_item_view);
         audioFile = getExternalCacheDir().getAbsolutePath();
 
         getListfromdb();
-        navigationItemSelected();
+//        navigationItemSelected();
         recordActivityIntent();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
+    }
+
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
     }
 
     public void recordActivityIntent() {
@@ -91,33 +100,6 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-
-    private void navigationItemSelected() {
-        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.home_tab:
-                        Intent homeIntent = new Intent(ProfileActivity.this, ProfileActivity.class);
-                        startActivity(homeIntent);
-                        break;
-                    case R.id.profile_tab:
-                        Intent profileIntent = new Intent(ProfileActivity.this, RecordActivity.class);
-                        startActivity(profileIntent);
-                        break;
-                    case R.id.friends_tab:
-                        Intent friendsIntent = new Intent(ProfileActivity.this, RegisterActivity.class);
-                        startActivity(friendsIntent);
-                        break;
-                    case R.id.settings_tab:
-                        Intent settingsIntent = new Intent(ProfileActivity.this, RegisterActivity.class);
-                        startActivity(settingsIntent);
-                        break;
-                }
-                return true;
-            }
-        });
-    }
 
     private void getListfromdb() {
         db.collection("users").document(currentUserUID).collection("audio")

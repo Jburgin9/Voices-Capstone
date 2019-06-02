@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.FeedActivity">
+    tools:context=".views.LikesActivity">
 
 
     <android.support.design.widget.BottomNavigationView
@@ -13,11 +13,11 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:elevation="4dp"
+        android:focusableInTouchMode="true"
         app:itemIconTint="@color/colorPrimaryDark"
         app:itemTextColor="@color/colorPrimaryDark"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:menu="@menu/nav_bottom_tabs" />
-
 </android.support.constraint.ConstraintLayout>

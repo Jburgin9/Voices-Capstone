@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.FeedActivity">
+    tools:context=".views.BaseActivity">
+
+
+
+
+
 
 
     <android.support.design.widget.BottomNavigationView
@@ -19,5 +24,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:menu="@menu/nav_bottom_tabs" />
-
 </android.support.constraint.ConstraintLayout>

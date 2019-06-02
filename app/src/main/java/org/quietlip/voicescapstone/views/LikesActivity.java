@@ -9,20 +9,18 @@ import android.view.MenuItem;
 
 import org.quietlip.voicescapstone.R;
 
-public class FeedActivity extends BaseActivity {
+public class LikesActivity extends BaseActivity{
 
     private BottomNavigationView navigation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
+        setContentView(R.layout.activity_likes);
 
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
-
-
     }
 
-    }
-
+}
