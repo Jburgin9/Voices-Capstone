@@ -36,6 +36,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private AppCompatImageButton play;
     private TextView title;
     private MediaPlayer mediaPlayer;
+    private boolean mPlay = true;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -48,7 +49,15 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPlaying(itemView.getContext(),Uri.parse(audio.getUri()));
+                if (mPlay) {
+                    play.setImageResource(R.drawable.stop2);
+                    startPlaying(itemView.getContext(),Uri.parse(audio.getUri()));
+                } else {
+                    play.setImageResource(R.drawable.play_button);
+                    stopPlaying();
+                }
+                mPlay = !mPlay;
+
             }
         });
     }
@@ -56,14 +65,18 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private void startPlaying(Context context, Uri audio) {
         mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(context,audio);
+            mediaPlayer.setDataSource(context, audio);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            Log.d("VIEW HOLDER",String.valueOf(mediaPlayer.isPlaying()));
+            Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
             Log.e("VIEW HOLDER", "prepare() failed");
         }
     }
+        private void stopPlaying() {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
 
 }
 
