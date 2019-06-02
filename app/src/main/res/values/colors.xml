@@ -3,5 +3,6 @@
     <color name="colorAccent">#000000</color>
     <color name="colorPrimaryDark">#BF7A0D</color>
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorprogressBar">#BF7A0D</color>
+
 </resources>
