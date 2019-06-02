@@ -1,23 +1,27 @@
 package org.quietlip.voicescapstone.models;
 
-import android.net.Uri;
-
 public class UserModel {
     private String username;
-    private Uri imageUrl;
+    private String imageUrl;
     private String userID;
+    private String aboutMe;
+
+    public UserModel(String username, String userID, String imageUrl) {
+        this.username = username;
+        this.userID = userID;
+        this.imageUrl = imageUrl;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
+    }
 
     public String getUsername() {
         return username;
     }
 
-    public Uri getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
-    }
-
-    public UserModel(String username, String userID) {
-        this.username = username;
-        this.userID = userID;
     }
 
     public String getUserID() {

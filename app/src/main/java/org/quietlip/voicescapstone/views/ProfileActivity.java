@@ -19,9 +19,14 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
@@ -32,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -49,12 +53,17 @@ public class ProfileActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private BottomNavigationView navigation;
-    private TextView title;
+    private TextView title, usernameTv;
     private static String audioFile;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
     List audioList = new ArrayList<>();
+
+    private FirebaseUser fireUser;
+    private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
+    private StorageReference storage;
 
 
     @Override
@@ -68,9 +77,13 @@ public class ProfileActivity extends AppCompatActivity {
         recordButton = findViewById(R.id.mic);
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.title_item_view);
+        usernameTv = findViewById(R.id.user_name);
         navigation = findViewById(R.id.bottom_nav);
         play = findViewById(R.id.play_button_item_view);
         audioFile = getExternalCacheDir().getAbsolutePath();
+        auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference(currentUserUID).child("Photos");
 
         getListfromdb();
         navigationItemSelected();
@@ -154,5 +167,21 @@ public class ProfileActivity extends AppCompatActivity {
     private void stopPlaying() {
         player.release();
         player = null;
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(currentUserUID != null){
+            firestore.collection("Users").document(currentUserUID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                   Picasso.get().load((String) task.getResult().get("imageUrl")).into(profile_pic);
+                   usernameTv.setText(task.getResult().get("username").toString());
+                }
+            });
+        }
     }
 }

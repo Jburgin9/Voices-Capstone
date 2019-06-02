@@ -109,8 +109,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
                                 helper.dismissFirelog();
                                 uploadFile();
-                                user = new UserModel(username, registerAuth.getCurrentUser().getUid());
-                                firestore.collection(fireUser.getUid()).document(DOC_ONE).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                user = new UserModel(username, registerAuth.getCurrentUser().getUid(), imageUri.toString());
+                                firestore.collection("Users").document(fireUser.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
