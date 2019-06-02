@@ -11,6 +11,8 @@ import org.quietlip.voicescapstone.R;
 
 public class FeedActivity extends BaseActivity {
 
+
+
     private BottomNavigationView navigation;
 
     @Override
@@ -20,6 +22,7 @@ public class FeedActivity extends BaseActivity {
 
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
+
 
 
     }
