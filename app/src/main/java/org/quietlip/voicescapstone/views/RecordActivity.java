@@ -79,7 +79,7 @@ public class RecordActivity extends BaseActivity {
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
 
     @SuppressLint("ClickableViewAccessibility")

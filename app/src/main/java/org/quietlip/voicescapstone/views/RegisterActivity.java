@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -29,29 +31,48 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.utilis.Helper;
+
+import java.io.File;
+import java.io.PrintStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity {
     public static final String DOC_ONE = "Profile Info";
-    public static final String DOC_PHOTO= "Photos";
+    public static final String DOC_PHOTO = "Photos";
     private static final String TAG = "PROUD";
     public static final int IMAGE_REQUEST = 0;
+
+    private ImageView logoIV;
     private EditText registerEmail, registerPassword, registerUsername;
     private Button createAccountBtn;
-    private FirebaseAuth registerAuth;
-    private Helper helper;
     private CoordinatorLayout coord;
-    private ImageView logoIV;
+
+
+    private Helper helper;
+
+    private Uri imageUri;
+    private UserModel user;
+    private TextView uploadImageTv;
+
+     String email;
+     String password;
+     String username;
+
     private FirebaseFirestore firestore;
     private CircleImageView profileImage;
     private FirebaseUser fireUser;
     private StorageReference storage;
-    private Uri imageUri;
-    private UserModel user;
-    private TextView uploadImageTv;
+    private FirebaseAuth registerAuth;
+
+    private String currentUserUID = FirebaseAuth.getInstance().getUid();
+    private final String photosFolderName = "Photos";
+    String users = "users";
+    private Task uploadTask;
+    String fireUIPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +92,13 @@ public class RegisterActivity extends AppCompatActivity {
         uploadImageTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            imageChoser();
+                imageChoser();
             }
         });
     }
 
     //init views & necessary components
-    private void initComps(){
+    private void initComps() {
         registerPassword = findViewById(R.id.register_password_et);
         registerEmail = findViewById(R.id.register_email_et);
         createAccountBtn = findViewById(R.id.create_account_btn);
@@ -92,13 +113,13 @@ public class RegisterActivity extends AppCompatActivity {
         uploadImageTv = findViewById(R.id.upload_image_tv);
     }
 
-    private void registerUser(){
+    private void registerUser() {
         Log.d(TAG, "registerUser: ");
-        final String email = registerEmail.getText().toString();
-        final String password = registerPassword.getText().toString();
-        final String username = registerUsername.getText().toString();
+         email = registerEmail.getText().toString();
+         password = registerPassword.getText().toString();
+         username = registerUsername.getText().toString();
 
-        if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
+        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
             helper.makeFirelog(this, "", "loading...");
             registerAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -106,18 +127,13 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: ");
-                                storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
+//                                storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
                                 helper.dismissFirelog();
-                                uploadFile();
-                                user = new UserModel(username, registerAuth.getCurrentUser().getUid());
-                                firestore.collection(fireUser.getUid()).document(DOC_ONE).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
-                                    }
-                                });
+//
+                                downLoadUri();
                             } else {
                                 helper.dismissFirelog();
+                                Log.d(TAG, "onComplete: " + task.getException().toString());
                                 helper.makeSnackie(coord, task.getException().toString());
                             }
                         }
@@ -127,10 +143,10 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.d(TAG, "onFailure: " + e.getMessage());
                 }
             });
-           }
+        }
     }
 
-    private void imageChoser(){
+    private void imageChoser() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -141,8 +157,8 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == IMAGE_REQUEST && resultCode == RESULT_OK &&
-        data != null && data.getData() != null){
+        if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
             imageUri = data.getData();
 
             Picasso.get().load(imageUri).into(profileImage);
@@ -150,12 +166,14 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void uploadFile(){
-        if(imageUri != null){
+    private void uploadFile() {
+        if (imageUri != null) {
+
+
             storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //snackie happy
+                    Log.d(TAG, "onSuccess: " + imageUri);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -164,8 +182,45 @@ public class RegisterActivity extends AppCompatActivity {
                     //snackie sad
                 }
             });
-        }else {
-          //pick something cuzz
+        } else {
+            //pick something cuzz
         }
+
+    }
+
+
+    private void downLoadUri() {
+       storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
+        uploadTask = storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        fireUIPath = uri.toString();
+
+                        Log.d(TAG, "onSuccess: " + uri.toString());
+                        user = new UserModel(username, fireUser.getUid(),fireUIPath,"abut test");
+//                                firestore.collection(fireUser.getUid()).document(DOC_ONE).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void aVoid) {
+//                                        startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
+//                                    }
+//                                });
+                        firestore.collection("users").document(fireUser.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                                startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
+
+
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+
     }
 }

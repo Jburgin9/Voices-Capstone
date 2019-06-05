@@ -27,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class ProfileActivity extends BaseActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
     List audioList = new ArrayList<>();
+    UserModel userInfo;
 
 
     @Override
@@ -83,6 +85,24 @@ public class ProfileActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
     }
+//    private void retrieveUserInfo (){
+//        db.collection("users").document(currentUserUID)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                userInfo.getImageUrl();
+//                                userInfo.getAboutMe();
+//                                userInfo.getUserName();
+//
+//
+//                            }
+//
+//                            }
+//
+//    }
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {

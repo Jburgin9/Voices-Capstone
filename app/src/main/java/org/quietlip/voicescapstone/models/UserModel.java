@@ -7,18 +7,19 @@ import java.util.List;
 public class UserModel {
     private String userId;
     private String userName;
-    private Uri imageUrl;
+    private String imageUrl;
     private String aboutMe;
     private List<AudioModel> audioList;
     private List<UserModel> friendsList;
 
-   public UserModel(String userName , String userId) {
-
+   public UserModel(String userName , String userId, String imageUrl, String aboutMe) {
         this.userName = userName;
         this.userId = userId;
+       this.imageUrl = imageUrl;
+       this.aboutMe = aboutMe;
     }
 
-    public UserModel(String userId, String userName, Uri imageUrl , String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
+    public UserModel(String userId, String userName, String imageUrl , String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
         this.userId = userId;
         this.userName = userName;
         this.imageUrl = imageUrl;
@@ -27,11 +28,11 @@ public class UserModel {
         this.friendsList = friendsList;
     }
 
-    public Uri getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(Uri imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
