@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,7 +42,6 @@ public class ProfileActivity extends BaseActivity {
     private CircleImageView profile_pic;
 
     private ImageView mic;
-    private FloatingActionButton recordButton;
 
     private MediaPlayer player;
 
@@ -67,9 +65,7 @@ public class ProfileActivity extends BaseActivity {
         setBottomNav(navigation);
         profile_pic = findViewById(R.id.profile_image);
 
-        mic = findViewById(R.id.mic);
 
-        recordButton = findViewById(R.id.mic);
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.title_item_view);
 
@@ -78,28 +74,19 @@ public class ProfileActivity extends BaseActivity {
 
         getListfromdb();
 //        navigationItemSelected();
-        recordActivityIntent();
+//        recordActivityIntent();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
     }
 
+    private void goToCommentActivity(){
+        Intent commentActivityIntent = new Intent(ProfileActivity.this, CommentActivity.class);
+        startActivity(commentActivityIntent);
+    }
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
         return super.onCreateView(parent, name, context, attrs);
     }
-
-    public void recordActivityIntent() {
-
-        mic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent recordintent = new Intent(ProfileActivity.this, RecordActivity.class);
-                startActivity(recordintent);
-            }
-        });
-    }
-
 
     private void getListfromdb() {
         db.collection("users").document(currentUserUID).collection("audio")
