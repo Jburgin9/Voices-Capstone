@@ -47,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     public static final int IMAGE_REQUEST = 0;
 
     private ImageView logoIV;
-    private EditText registerEmail, registerPassword, registerUsername;
+    private EditText registerEmail, registerPassword, registerUsername, regAboutMe;
     private Button createAccountBtn;
     private CoordinatorLayout coord;
 
@@ -61,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
      String email;
      String password;
      String username;
+     String aboutMe;
 
     private FirebaseFirestore firestore;
     private CircleImageView profileImage;
@@ -86,10 +87,11 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 registerUser();
+
             }
         });
 
-        uploadImageTv.setOnClickListener(new View.OnClickListener() {
+        profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 imageChoser();
@@ -97,20 +99,29 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    //init views & necessary components
+
     private void initComps() {
-        registerPassword = findViewById(R.id.register_password_et);
+
+        logoIV = findViewById(R.id.logo_reg_iv);
+        uploadImageTv = findViewById(R.id.upload_image_tv);
+
+        profileImage = findViewById(R.id.profile_image);
         registerEmail = findViewById(R.id.register_email_et);
-        createAccountBtn = findViewById(R.id.create_account_btn);
+        registerPassword = findViewById(R.id.register_password_et);
         registerUsername = findViewById(R.id.register_username_et);
+        regAboutMe = findViewById(R.id.about_me_input);
+
+
+        createAccountBtn = findViewById(R.id.create_account_btn);
+
         registerAuth = FirebaseAuth.getInstance();
         helper = Helper.getInstance();
         firestore = FirebaseFirestore.getInstance();
         coord = findViewById(R.id.coordinator_register);
-        logoIV = findViewById(R.id.logo_reg_iv);
-        profileImage = findViewById(R.id.profile_image);
+
+
         fireUser = registerAuth.getCurrentUser();
-        uploadImageTv = findViewById(R.id.upload_image_tv);
+
     }
 
     private void registerUser() {
@@ -118,6 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
          email = registerEmail.getText().toString();
          password = registerPassword.getText().toString();
          username = registerUsername.getText().toString();
+         aboutMe = regAboutMe.getText().toString();
 
         if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
             helper.makeFirelog(this, "", "loading...");
@@ -126,10 +138,9 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                Log.d(TAG, "onComplete: ");
-//                                storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
+                                Log.d(TAG, "onComplete: register ");
+
                                 helper.dismissFirelog();
-//
                                 downLoadUri();
                             } else {
                                 helper.dismissFirelog();
@@ -140,7 +151,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: " + e.getMessage());
+                    Log.d(TAG, "onFailure: register " + e.getMessage());
                 }
             });
         }
@@ -166,47 +177,43 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void uploadFile() {
-        if (imageUri != null) {
-
-
-            storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Log.d(TAG, "onSuccess: " + imageUri);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    //snackie sad
-                }
-            });
-        } else {
-            //pick something cuzz
-        }
-
-    }
+//    private void uploadFile() {
+//        if (imageUri != null) {
+//
+//
+//            storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    Log.d(TAG, "onSuccess: " + imageUri);
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    //snackie sad
+//                }
+//            });
+//        } else {
+//
+//        }
+//
+//    }
 
 
     private void downLoadUri() {
        storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
         uploadTask = storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                 storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         fireUIPath = uri.toString();
 
+
                         Log.d(TAG, "onSuccess: " + uri.toString());
-                        user = new UserModel(username, fireUser.getUid(),fireUIPath,"abut test");
-//                                firestore.collection(fireUser.getUid()).document(DOC_ONE).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
-//                                    }
-//                                });
+                        user = new UserModel(username, fireUser.getUid(),fireUIPath,aboutMe);
+
                         firestore.collection("users").document(fireUser.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {

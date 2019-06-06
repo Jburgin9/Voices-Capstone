@@ -9,23 +9,15 @@ public class UserModel {
     private String userName;
     private String imageUrl;
     private String aboutMe;
-    private List<AudioModel> audioList;
-    private List<UserModel> friendsList;
+
+
 
    public UserModel(String userName , String userId, String imageUrl, String aboutMe) {
         this.userName = userName;
         this.userId = userId;
        this.imageUrl = imageUrl;
        this.aboutMe = aboutMe;
-    }
 
-    public UserModel(String userId, String userName, String imageUrl , String aboutMe, List<AudioModel> audioList, List<UserModel> friendsList) {
-        this.userId = userId;
-        this.userName = userName;
-        this.imageUrl = imageUrl;
-        this.aboutMe = aboutMe;
-        this.audioList = audioList;
-        this.friendsList = friendsList;
     }
 
     public String getImageUrl() {
@@ -44,14 +36,6 @@ public class UserModel {
         this.userId = userId;
     }
 
-    public List<UserModel> getFriendsList() {
-        return friendsList;
-    }
-
-    public void setFriendsList(List<UserModel> friendsList) {
-        this.friendsList = friendsList;
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -68,11 +52,4 @@ public class UserModel {
         this.aboutMe = aboutMe;
     }
 
-    public List<AudioModel> getAudioList() {
-        return audioList;
-    }
-
-    public void setAudioList(List<AudioModel> audioList) {
-        this.audioList = audioList;
-    }
 }
