@@ -34,6 +34,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -190,7 +191,8 @@ public class RecordActivity extends BaseActivity {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(),currentUserUID);
+
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(),CurrentUserManager.getInstance().getCurrentUser());
                 db.collection(users).document(currentUserUID).collection("audio")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

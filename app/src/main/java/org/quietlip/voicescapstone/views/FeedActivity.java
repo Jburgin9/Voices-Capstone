@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,6 +29,7 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,25 +38,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FeedActivity extends BaseActivity {
 
-
-    private CircleImageView profilePic;
-    private TextView userName;
-    private TextView title;
-    private static String audioFile;
-
-    private ImageButton play;
-    private ImageView commentMic;
-    private MediaPlayer player;
-
     private VoicesAdapter voicesAdapter;
     private RecyclerView recyclerView;
 
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String allUsersUID = FirebaseAuth.getInstance().getUid();
 
-    List audioList = new ArrayList<>();
-    UserModel userInfo;
+    List feedAudioList = new ArrayList<>();
 
     private BottomNavigationView navigation;
 
@@ -65,66 +55,53 @@ public class FeedActivity extends BaseActivity {
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
 
-        userName = findViewById(R.id.feed_username);
-        title = findViewById(R.id.feed_title);
-        play = findViewById(R.id.feed_play);
-        profilePic = findViewById(R.id.feed_image);
-        commentMic = findViewById(R.id.feed_mic);
-
         recyclerView = findViewById(R.id.feed_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        retrieveFeed();
 
-        audioFile = getExternalCacheDir().getAbsolutePath();
-        retrieveUserInfo();
-//        getListfromdb();
 
     }
-    private void retrieveUserInfo() {
-        db.collection("users").document("user")
+
+    private void retrieveFeed() {
+        db.collection("users")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            userInfo = new UserModel(document.get("userName").toString(),document.get("userId").toString(), document.get("imageUrl").toString(),
-                                    document.get("aboutMe").toString());
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                final String id = (String) document.get("userId");
+                                final UserModel user = new UserModel(document.get("userName").toString(), document.get("userId").toString(),
+                                        document.get("imageUrl").toString(), document.get("aboutMe").toString());
+                                db.collection("users").document(id).collection("audio")
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), (UserModel) document.get("user")));
+
+                                                    }
+                                                    voicesAdapter = new VoicesAdapter(feedAudioList);
+                                                    recyclerView.setAdapter(voicesAdapter);
 
 
-                            userName.setText(userInfo.getUserName());
-
-                            Picasso.get().load(userInfo.getImageUrl()).fit().into(profilePic);
+                                                } else {
+                                                    Log.d("help", "Error getting documents: ", task.getException());
+                                                }
+                                            }
+                                        });
+                            }
 
 
                         } else {
                             Log.d("help", "Error getting documents: ", task.getException());
                         }
+
                     }
                 });
-
     }
-//    private void getFeed (){
-//        private void getListfromdb() {
-//            db.collection("users").document(currentUserUID).collection("audio")
-//                    .get()
-//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            if (task.isSuccessful()) {
-//                                for (QueryDocumentSnapshot document : task.getResult()) {
-//                                    audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),currentUserUID));
-//
-//                                }
-//                                voicesAdapter = new VoicesAdapter(audioList);
-//                                recyclerView.setAdapter(voicesAdapter);
-//
-//                            } else {
-//                                Log.d("help", "Error getting documents: ", task.getException());
-//                            }
-//                        }
-//                    });
-//
-//        }
-
 }
-

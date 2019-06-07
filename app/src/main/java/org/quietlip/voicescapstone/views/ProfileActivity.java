@@ -35,6 +35,7 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.GlideApp;
 
 import java.io.IOException;
@@ -88,8 +89,8 @@ public class ProfileActivity extends BaseActivity {
 
 
         recyclerView = findViewById(R.id.recycler_view);
-        title = findViewById(R.id.title_item_view);
-        play = findViewById(R.id.play_button_item_view);
+        title = findViewById(R.id.profile_title);
+        play = findViewById(R.id.profile_play);
         audioFile = getExternalCacheDir().getAbsolutePath();
         retrieveUserInfo();
         getListfromdb();
@@ -144,7 +145,7 @@ public class ProfileActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),currentUserUID));
+                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser()));
 
                             }
                             voicesAdapter = new VoicesAdapter(audioList);

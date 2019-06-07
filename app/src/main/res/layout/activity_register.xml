@@ -148,7 +148,6 @@
             android:background="@drawable/accent_border"
             android:gravity="center"
             android:hint="@string/about_me_input"
-            android:inputType="textPassword"
             android:padding="10dp"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@android:color/black"

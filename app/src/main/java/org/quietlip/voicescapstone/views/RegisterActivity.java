@@ -209,8 +209,7 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         fireUIPath = uri.toString();
-
-
+                        
                         Log.d(TAG, "onSuccess: " + uri.toString());
                         user = new UserModel(username, fireUser.getUid(),fireUIPath,aboutMe);
 
