@@ -71,8 +71,8 @@ public class ProfileActivity extends BaseActivity {
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
     StorageReference storage = FirebaseStorage.getInstance().getReference(currentUserUID).child(DOC_PHOTO);
 
-    List audioList = new ArrayList<>();
-    UserModel userInfo;
+    private List<AudioModel> audioList;
+    private UserModel userInfo;
 
 
     @Override
@@ -87,7 +87,7 @@ public class ProfileActivity extends BaseActivity {
         aboutME = findViewById(R.id.about_me);
         userName = findViewById(R.id.user_name);
 
-
+        audioList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
@@ -95,11 +95,8 @@ public class ProfileActivity extends BaseActivity {
 
         retrieveUserInfo();
         getListfromdb();
-//        navigationItemSelected();
-//        recordActivityIntent();
 
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
     private void retrieveUserInfo() {
@@ -128,15 +125,11 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
-    private void goToCommentActivity() {
-        Intent commentActivityIntent = new Intent(ProfileActivity.this, CommentActivity.class);
-        startActivity(commentActivityIntent);
-    }
-
-    @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-        return super.onCreateView(parent, name, context, attrs);
-    }
+//
+//    @Override
+//    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+//        return super.onCreateView(parent, name, context, attrs);
+//    }
 
     private void getListfromdb() {
 
@@ -158,6 +151,8 @@ public class ProfileActivity extends BaseActivity {
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
                     }
                 });
 
