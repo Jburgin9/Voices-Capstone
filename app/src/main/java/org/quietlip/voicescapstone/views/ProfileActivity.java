@@ -1,24 +1,19 @@
 package org.quietlip.voicescapstone.views;
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +21,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.model.value.StringValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -36,7 +30,6 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
-import org.quietlip.voicescapstone.utilis.GlideApp;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,13 +37,12 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static org.quietlip.voicescapstone.views.RegisterActivity.DOC_PHOTO;
-
 
 public class ProfileActivity extends BaseActivity {
 
     private ImageButton play;
     private ImageView mic;
+    private boolean mPlay = true;
     private TextView title;
 
     private MediaPlayer player;
@@ -100,6 +92,7 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void retrieveUserInfo() {
+
         db.collection("users").document(currentUserUID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -125,11 +118,12 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
-//
-//    @Override
-//    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-//        return super.onCreateView(parent, name, context, attrs);
-//    }
+
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
+
+    }
 
     private void getListfromdb() {
 
@@ -158,12 +152,28 @@ public class ProfileActivity extends BaseActivity {
 
     }
 
-    public void startPlay(View view) {
+
+    public void startPlay() {
         player = new MediaPlayer();
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPlay){
+                    play.setImageResource(R.drawable.stop);
+                    startPlay();
+                } else {
+                    play.setImageResource(R.drawable.play_button);
+                    stopPlaying();
+                }
+                mPlay = !mPlay;
+            }
+        });
+
         try {
             player.setDataSource(audioFile);
             player.prepare();
             player.start();
+
         } catch (IOException e) {
         }
     }

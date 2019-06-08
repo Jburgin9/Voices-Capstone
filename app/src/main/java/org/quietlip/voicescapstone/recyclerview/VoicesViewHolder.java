@@ -65,8 +65,8 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         title = itemView.findViewById(R.id.profile_title);
         profilePic = itemView.findViewById(R.id.profile_image);
         username = itemView.findViewById(R.id.profile_username);
-        commentMic = itemView.findViewById(R.id.profile_mic);
 
+        commentMic = itemView.findViewById(R.id.profile_mic);
     }
 
     public void onBind(final AudioModel audio) {
