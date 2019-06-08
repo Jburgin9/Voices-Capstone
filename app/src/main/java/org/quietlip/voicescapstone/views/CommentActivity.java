@@ -1,6 +1,8 @@
 package org.quietlip.voicescapstone.views;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -49,7 +51,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentActivity extends BaseActivity {
     String users = "users";
-    String commentList1 = "commentlist";
+    //    String commentList1 = "commentlist";
+    private ProgressDialog progressDialog;
 
     private BottomNavigationView navigationView;
     private MediaRecorder mediaRecorder;
@@ -83,18 +86,21 @@ public class CommentActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Context context;
+        progressDialog = new ProgressDialog(this);
         setContentView(R.layout.activity_comment);
-
-        navigationView = findViewById(R.id.bottom_nav);
-        setBottomNav(navigationView);
-
-        commentActivity = this;
-
         record = findViewById(R.id.record_button_comment);
         play = findViewById(R.id.play_button_comment);
         post = findViewById(R.id.post_button_comment);
         titleInput = findViewById(R.id.title_input_comment);
         recyclerView = findViewById(R.id.comment_recycler);
+
+
+
+        navigationView = findViewById(R.id.bottom_nav);
+        setBottomNav(navigationView);
+
+        commentActivity = this;
 
         audioFile = getExternalCacheDir().getAbsolutePath();
         audioFile += System.currentTimeMillis() + "_recorded_audio.3pg";
@@ -162,18 +168,20 @@ public class CommentActivity extends BaseActivity {
                         commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getCurrentUser()));
 
                     }
-                    commentAdapter = new CommentAdapter(commentList);
-                    recyclerView.setAdapter(commentAdapter);
+
 
                 } else {
                     Log.d("help", "Error getting documents: ", task.getException());
                 }
+                commentAdapter = new CommentAdapter(commentList);
+                recyclerView.setAdapter(commentAdapter);
             }
         });
     }
 
     private void uploadAudio() {
-
+        progressDialog.setMessage("Uploading Audio...");
+        progressDialog.show();
         StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
         final Uri uri = Uri.fromFile(new File(audioFile));
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {

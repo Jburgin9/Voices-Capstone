@@ -71,10 +71,10 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
-        audioModel = audio;
-        UserModel user = audio.getUser();
-        String username1 = user.getUserName();
-//        audio.getUser().getImageUrl()
+//        audioModel = audio;
+//        UserModel user = audio.getUser();
+//        String username1 = user.getUserName();
+////        audio.getUser().getImageUrl();
 
         UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         String currentUserName = user1.getUserName();
