@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -88,6 +89,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (task.isSuccessful()) {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "success");
+                                String uid = FirebaseAuth.getInstance().getUid();
+                                CurrentUserManager.getInstance().setUser(uid);
                                 startActivity(new Intent(LoginActivity.this, FeedActivity.class));
                             } else {
                                 helper.dismissFirelog();

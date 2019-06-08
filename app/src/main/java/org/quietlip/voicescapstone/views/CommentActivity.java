@@ -1,8 +1,6 @@
 package org.quietlip.voicescapstone.views;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -13,64 +11,65 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.recyclerview.CommentAdapter;
+import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.opencensus.tags.Tag;
 
-public class RecordActivity extends BaseActivity {
-
+public class
+CommentActivity extends BaseActivity {
     String users = "users";
     String userlist = "userlist";
 
-    private BottomNavigationView navigation;
+    private BottomNavigationView navigationView;
     private MediaRecorder mediaRecorder;
-    private MediaPlayer mediaPlayer;
-
+    private MediaPlayer player;
     private CircleImageView record;
     private ImageView play;
     private Button post;
     private EditText titleInput;
+    private RecyclerView recyclerView;
 
     private boolean mPlay = true;
-    private boolean mrecord = true;
+    private boolean mRecord = true;
 
-    private RecordActivity recordActivity;
-
-
+    List commentList = new ArrayList();
+    private CommentActivity commentActivity;
     private static String audioFile;
     private final String audioFolderName = "audio";
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private ProgressDialog progressDialog;
-
+    private CommentAdapter commentAdapter;
 
     FirebaseStorage storage = FirebaseStorage.getInstance("gs://voicescapstone.appspot.com");
     private StorageReference mStorageRef = storage.getReference();
@@ -80,43 +79,36 @@ public class RecordActivity extends BaseActivity {
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
-
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        progressDialog = new ProgressDialog(this);
-        setContentView(R.layout.activity_record);
+        setContentView(R.layout.activity_comment);
 
-        navigation = findViewById(R.id.bottom_nav);
-        setBottomNav(navigation);
+        navigationView = findViewById(R.id.bottom_nav);
+        setBottomNav(navigationView);
 
+        commentActivity = this;
 
-        recordActivity = this;
-
-
-        record = findViewById(R.id.record_button1);
-        play = findViewById(R.id.play_button);
-        post = findViewById(R.id.post_button);
-        titleInput = findViewById(R.id.title_input);
+        record = findViewById(R.id.record_button_comment);
+        play = findViewById(R.id.play_button_comment);
+        post = findViewById(R.id.post_button_comment);
+        titleInput = findViewById(R.id.title_input_comment);
+        recyclerView = findViewById(R.id.comment_recycler);
 
         audioFile = getExternalCacheDir().getAbsolutePath();
-        audioFile += System.currentTimeMillis() + "_recorded_audio.3gp";
+        audioFile += System.currentTimeMillis() + "_recorded_audio.3pg";
         askPermission();
         setRecordAudioOnClick();
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
-
     }
 
     private void setPlayAudioBackOnClick() {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                stopRecording();
-
                 if (mPlay) {
                     play.setImageResource(R.drawable.stop);
                     startPlaying();
@@ -126,8 +118,6 @@ public class RecordActivity extends BaseActivity {
                 }
                 mPlay = !mPlay;
             }
-
-            //                fetchAudioUrlFromFirebase();
         });
     }
 
@@ -140,65 +130,67 @@ public class RecordActivity extends BaseActivity {
         });
     }
 
+
     private void askPermission() {
-        if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-           ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
-                   2);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(commentActivity, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
         }
-        //else do something
     }
 
     private void setRecordAudioOnClick() {
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mrecord) {
+                if (mRecord) {
                     record.setImageResource(R.drawable.recordon3);
                     startRecording();
                 } else {
                     record.setImageResource(R.drawable.recordoff2);
-
                     stopRecording();
                 }
-                mrecord = !mrecord;
+                mRecord = !mRecord;
             }
         });
     }
 
+    private void getListFromDatabase(){
+        db.collection("users").document(currentUserUID).collection("audio").document("comments").collection("commentlist").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),CurrentUserManager.getCurrentUser()));
 
-    private void goToProfile() {
-        Intent profileIntent = new Intent(RecordActivity.this, ProfileActivity.class);
-        startActivity(profileIntent);
+                            }
+                            commentAdapter = new CommentAdapter(commentList);
+                            recyclerView.setAdapter(commentAdapter);
+
+                        } else {
+                            Log.d("help", "Error getting documents: ", task.getException());
+                        }
+            }
+        });
     }
 
-
     private void uploadAudio() {
-        progressDialog.setMessage("Uploading Audio...");
-        progressDialog.show();
-        StorageReference filepath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
+        StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
         final Uri uri = Uri.fromFile(new File(audioFile));
-        filepath.putFile(uri).addOnFailureListener(new OnFailureListener() {
+        filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
 
-                progressDialog.dismiss();
-
-
             }
         });
-        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-
+        filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(),CurrentUserManager.getInstance().getCurrentUser());
-                db.collection(users).document(currentUserUID).collection("audio")
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser());
+                db.collection(users).document(currentUserUID).collection("audio").document("comments").collection("commentlist")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
-                                goToProfile();
                                 Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
                             }
                         })
@@ -208,16 +200,9 @@ public class RecordActivity extends BaseActivity {
                                 Log.w("test", "Error adding document", e);
                             }
                         });
-                ;
-
-
-                progressDialog.dismiss();
-
-
             }
         });
     }
-
 
     @Override
     public void onStop() {
@@ -225,11 +210,6 @@ public class RecordActivity extends BaseActivity {
         if (mediaRecorder != null) {
             mediaRecorder.release();
             mediaRecorder = null;
-        }
-
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
         }
     }
 
@@ -245,16 +225,16 @@ public class RecordActivity extends BaseActivity {
     }
 
     private void startPlaying() {
-        mediaPlayer = new MediaPlayer();
+        player = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(audioFile);
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            player.setDataSource(audioFile);
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mediaPlayer.start();
+                    player.start();
                 }
             });
-            mediaPlayer.prepareAsync();
+            player.prepareAsync();
 
         } catch (IOException e) {
             Log.e("play", "prepare() failed");
@@ -262,8 +242,8 @@ public class RecordActivity extends BaseActivity {
     }
 
     private void stopPlaying() {
-        mediaPlayer.release();
-        mediaPlayer = null;
+        player.release();
+        player = null;
     }
 
     private void startRecording() {
@@ -295,7 +275,4 @@ public class RecordActivity extends BaseActivity {
             Log.e("stoprecord", "failed");
         }
     }
-
 }
-
-
