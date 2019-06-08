@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 helper.makeSnackie(coord, "success");
                                 String uid = FirebaseAuth.getInstance().getUid();
                                 CurrentUserManager.getInstance().setUser(uid);
-                                startActivity(new Intent(LoginActivity.this, FeedActivity.class));
+                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
                             } else {
                                 helper.dismissFirelog();
                                 helper.makeSnackie(coord, "failure");

@@ -1,6 +1,5 @@
 package org.quietlip.voicescapstone.recyclerview;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,11 +12,11 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
-    List<AudioModel> audioList;
+    List<AudioModel> commentList;
     RecyclerView recyclerView;
 
-    public CommentAdapter(List<AudioModel> audioList) {
-        this.audioList = audioList;
+    public CommentAdapter(List<AudioModel> commentList) {
+        this.commentList = commentList;
     }
 
     @NonNull
@@ -31,13 +30,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder commentViewHolder, int i) {
-        commentViewHolder.onBind(audioList.get(i));
+        commentViewHolder.onBind(commentList.get(i));
 
     }
 
 
     @Override
     public int getItemCount() {
-        return audioList.size();
+        return commentList.size();
     }
 }

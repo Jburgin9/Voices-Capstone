@@ -83,9 +83,8 @@ public class FeedActivity extends BaseActivity {
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        HashMap<String, String> user = (HashMap<String, String>) document.get("user");
-                                                        UserModel usermodel = new UserModel(user.get("userName"), user.get("userId"), user.get("imageUrl"), user.get("aboutMe"));
-                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), usermodel));
+                                                        HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user));
 
                                                     }
                                                     voicesAdapter = new VoicesAdapter(feedAudioList);

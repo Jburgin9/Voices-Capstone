@@ -47,10 +47,9 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class
-CommentActivity extends BaseActivity {
+public class CommentActivity extends BaseActivity {
     String users = "users";
-    String userlist = "userlist";
+    String commentList1 = "commentlist";
 
     private BottomNavigationView navigationView;
     private MediaRecorder mediaRecorder;
@@ -154,26 +153,27 @@ CommentActivity extends BaseActivity {
         });
     }
 
-    private void getListFromDatabase(){
+    private void getListFromDatabase() {
         db.collection("users").document(currentUserUID).collection("audio").document("comments").collection("commentlist").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),CurrentUserManager.getCurrentUser()));
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getCurrentUser()));
 
-                            }
-                            commentAdapter = new CommentAdapter(commentList);
-                            recyclerView.setAdapter(commentAdapter);
+                    }
+                    commentAdapter = new CommentAdapter(commentList);
+                    recyclerView.setAdapter(commentAdapter);
 
-                        } else {
-                            Log.d("help", "Error getting documents: ", task.getException());
-                        }
+                } else {
+                    Log.d("help", "Error getting documents: ", task.getException());
+                }
             }
         });
     }
 
     private void uploadAudio() {
+
         StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
         final Uri uri = Uri.fromFile(new File(audioFile));
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
@@ -191,6 +191,7 @@ CommentActivity extends BaseActivity {
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
+                                getListFromDatabase();
                                 Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
                             }
                         })

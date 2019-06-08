@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 

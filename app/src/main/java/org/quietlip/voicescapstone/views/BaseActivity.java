@@ -36,18 +36,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                         Intent feedIntent = new Intent(BaseActivity.this, FeedActivity.class);
                         startActivity(feedIntent);
                         break;
-                    case R.id.friends_tab:
-                        Intent friendsIntent = new Intent(BaseActivity.this, RegisterActivity.class);
-                        startActivity(friendsIntent);
-                        break;
                     case R.id.record_tab:
                         Intent recordIntent = new Intent(BaseActivity.this, RecordActivity.class);
                         startActivity(recordIntent);
                         break;
-                    case R.id.likes_tab:
-                        Intent likesIntent = new Intent(BaseActivity.this, LikesActivity.class);
-                        startActivity(likesIntent);
-                        break;
+
                     case R.id.account_tab:
                         Intent settingsIntent = new Intent(BaseActivity.this, ProfileActivity.class);
                         startActivity(settingsIntent);

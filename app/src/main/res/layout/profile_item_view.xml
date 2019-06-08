@@ -65,7 +65,6 @@
                 android:layout_marginBottom="8dp"
                 android:layout_toRightOf="@+id/profile_image"
                 android:background="@color/colorPrimary"
-                android:onClick="startPlay"
                 android:src="@drawable/play_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/profile_seekbar"
