@@ -10,30 +10,49 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Picasso;
+
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.models.UserModel;
 
 import java.io.IOException;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class CommentViewHolder extends RecyclerView.ViewHolder {
     private AppCompatImageButton play;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView title;
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
+    private CircleImageView comment_pic;
+    private TextView username;
+    AudioModel audioModel;
+
 
     public CommentViewHolder (@NonNull View itemView) {
         super(itemView);
-        play = itemView.findViewById(R.id.play_button_comment);
-        title = itemView.findViewById(R.id.title_input_comment);
+        play = itemView.findViewById(R.id.comment_play);
+        title = itemView.findViewById(R.id.comment_title);
+        comment_pic = itemView.findViewById(R.id.comment_image);
+        username = itemView.findViewById(R.id.comment_username);
     }
 
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
+        audioModel = audio;
+        UserModel user = audio.getUser();
+        String username1 = user.getUserName();
+        username.setText(username1);
+        Picasso.get().load(audio.getUser().getImageUrl()).fit().into(comment_pic);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
-                    play.setImageResource(R.drawable.stop2);
+                    play.setImageResource(R.drawable.stop);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
