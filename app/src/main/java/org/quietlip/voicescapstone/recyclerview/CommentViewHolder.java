@@ -28,17 +28,17 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private TextView title;
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
-    private CircleImageView profile_pic;
+    private CircleImageView comment_pic;
     private TextView username;
     AudioModel audioModel;
 
 
     public CommentViewHolder (@NonNull View itemView) {
         super(itemView);
-        play = itemView.findViewById(R.id.play_button_comment);
-        title = itemView.findViewById(R.id.title_input_comment);
-        profile_pic = itemView.findViewById(R.id.profile_image);
-        username = itemView.findViewById(R.id.user_name);
+        play = itemView.findViewById(R.id.comment_play);
+        title = itemView.findViewById(R.id.comment_title);
+        comment_pic = itemView.findViewById(R.id.comment_image);
+        username = itemView.findViewById(R.id.comment_username);
     }
 
     public void onBind(final AudioModel audio) {
@@ -47,7 +47,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         UserModel user = audio.getUser();
         String username1 = user.getUserName();
         username.setText(username1);
-        Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profile_pic);
+        Picasso.get().load(audio.getUser().getImageUrl()).fit().into(comment_pic);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

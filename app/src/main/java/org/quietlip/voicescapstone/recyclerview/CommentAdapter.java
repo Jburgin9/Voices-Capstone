@@ -13,7 +13,6 @@ import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     List<AudioModel> commentList;
-    RecyclerView recyclerView;
 
     public CommentAdapter(List<AudioModel> commentList) {
         this.commentList = commentList;
@@ -22,8 +21,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_item_view, viewGroup, false);
-        recyclerView = view.findViewById(R.id.comment_recycler);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment_item_view, viewGroup, false);
         return new CommentViewHolder(view);
 
     }
