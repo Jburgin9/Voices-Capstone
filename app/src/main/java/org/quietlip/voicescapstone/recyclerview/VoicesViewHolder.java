@@ -65,7 +65,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         title.setText(audio.getTitle());
         audioModel = audio;
         UserModel user = audio.getUser();
-        String username1 = user .getUserName();
+        String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
 
@@ -74,7 +74,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
-                    play.setImageResource(R.drawable.stop2);
+                    play.setImageResource(R.drawable.stop);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
