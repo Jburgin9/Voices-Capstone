@@ -64,7 +64,9 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
         audioModel = audio;
-        username.setText(audio.getUser().getUserName());
+        UserModel user = audio.getUser();
+        String username1 = user .getUserName();
+        username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
 
 
