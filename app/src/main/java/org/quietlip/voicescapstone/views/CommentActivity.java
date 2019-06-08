@@ -36,6 +36,7 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.recyclerview.CommentAdapter;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -159,7 +160,7 @@ CommentActivity extends BaseActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString()));
+                                commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),CurrentUserManager.getCurrentUser()));
 
                             }
                             commentAdapter = new CommentAdapter(commentList);
@@ -184,7 +185,7 @@ CommentActivity extends BaseActivity {
         filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString());
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser());
                 db.collection(users).document(currentUserUID).collection("audio").document("comments").collection("commentlist")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

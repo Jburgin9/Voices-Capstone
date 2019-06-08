@@ -6,12 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 
 import java.util.List;
 
+
 public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
+
     List<AudioModel> audioList;
 
     public VoicesAdapter(List<AudioModel> audioList) {
@@ -21,7 +25,7 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     @NonNull
     @Override
     public VoicesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_item_view,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_item_view, viewGroup, false);
         return new VoicesViewHolder(view);
 
     }
@@ -34,5 +38,8 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     @Override
     public int getItemCount() {
         return audioList.size();
+
+
     }
+
 }

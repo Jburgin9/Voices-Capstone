@@ -34,6 +34,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,7 +80,7 @@ public class RecordActivity extends BaseActivity {
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
 
     @SuppressLint("ClickableViewAccessibility")
@@ -163,20 +164,6 @@ public class RecordActivity extends BaseActivity {
             }
         });
     }
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//                        ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
-//                                2);
-//                    } else {
-//                        startRecording();
-//                    }
-//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-////                    stopRecording();
-//
-//                }
-//                return false;
 
 
     private void goToProfile() {
@@ -195,7 +182,7 @@ public class RecordActivity extends BaseActivity {
             public void onFailure(@NonNull Exception e) {
 
                 progressDialog.dismiss();
-//                    recordTextView.setText("Uploading Finished");
+
 
             }
         });
@@ -204,7 +191,8 @@ public class RecordActivity extends BaseActivity {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString());
+
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(),CurrentUserManager.getInstance().getCurrentUser());
                 db.collection(users).document(currentUserUID).collection("audio")
                         .add(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -224,44 +212,12 @@ public class RecordActivity extends BaseActivity {
 
 
                 progressDialog.dismiss();
-//                    recordTextView.setText("Uploading Finished");
+
 
             }
         });
     }
 
-//    private void fetchAudioUrlFromFirebase() {
-//        final FirebaseStorage storage = FirebaseStorage.getInstance();
-//        // Create a storage reference from our app
-//        StorageReference storageRef = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
-//        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            @Override
-//            public void onSuccess(Uri uri) {
-//                try {
-//                    mediaPlayer.setVolume(1, 1);
-//                    mediaPlayer.setDataSource(getApplicationContext(), uri);
-//                    // wait for media player to get prepare
-//                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                        @Override
-//                        public void onPrepared(MediaPlayer mediaPlayer) {
-//                            mediaPlayer.start();
-//                        }
-//                    });
-//                    mediaPlayer.prepareAsync();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.i("TAG", e.getMessage());
-//                    }
-//                });
-//
-//    }
 
     @Override
     public void onStop() {
