@@ -49,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentActivity extends BaseActivity {
     String users = "users";
-    String userlist = "userlist";
+    String commentList1 = "commentlist";
 
     private BottomNavigationView navigationView;
     private MediaRecorder mediaRecorder;
@@ -173,6 +173,7 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void uploadAudio() {
+
         StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
         final Uri uri = Uri.fromFile(new File(audioFile));
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
@@ -190,6 +191,7 @@ public class CommentActivity extends BaseActivity {
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
+                                getListFromDatabase();
                                 Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
                             }
                         })
