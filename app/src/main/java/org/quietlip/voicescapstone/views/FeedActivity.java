@@ -32,7 +32,9 @@ import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -81,8 +83,9 @@ public class FeedActivity extends BaseActivity {
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 if (task.isSuccessful()) {
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), (UserModel) document.get("user")));
+                                                        HashMap<String, String> user = (HashMap<String, String>) document.get("user");
+                                                        UserModel usermodel = new UserModel(user.get("userName"), user.get("userId"), user.get("imageUrl"), user.get("aboutMe"));
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), usermodel));
 
                                                     }
                                                     voicesAdapter = new VoicesAdapter(feedAudioList);
