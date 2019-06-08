@@ -1,6 +1,7 @@
 package org.quietlip.voicescapstone.recyclerview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -9,8 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +30,9 @@ import com.squareup.picasso.Picasso;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
+import org.quietlip.voicescapstone.views.CommentActivity;
+import org.quietlip.voicescapstone.views.ProfileActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +50,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private TextView title;
     private CircleImageView profilePic;
     private TextView username;
+    private ImageButton commentMic;
 
 
     private MediaPlayer mediaPlayer;
@@ -58,6 +65,8 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         title = itemView.findViewById(R.id.profile_title);
         profilePic = itemView.findViewById(R.id.profile_image);
         username = itemView.findViewById(R.id.profile_username);
+
+        commentMic = itemView.findViewById(R.id.profile_mic);
     }
 
     public void onBind(final AudioModel audio) {
@@ -65,14 +74,27 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         audioModel = audio;
         UserModel user = audio.getUser();
         String username1 = user.getUserName();
-        username.setText(username1);
-        Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
+//        audio.getUser().getImageUrl()
+
+        UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
+        String currentUserName = user1.getUserName();
+        username.setText(currentUserName);
+        Log.e("currentUser", currentUserName);
+        Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
+//                    Picasso.get().load(R.drawable.stop).fit().into(play);
                     play.setImageResource(R.drawable.stop);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
@@ -83,6 +105,17 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
+
+   commentMic.setOnClickListener(new View.OnClickListener()
+
+    {
+        @Override
+        public void onClick (View v){
+        goToCommentActivity();
+
+        }
+    });
+
     }
 
     private void startPlaying(Context context, Uri audio) {
@@ -101,8 +134,11 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer.release();
         mediaPlayer = null;
     }
+    private void goToCommentActivity() {
+        Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
+        itemView.getContext().startActivity(commentActivityIntent);
 
-
+    }
 }
 
 
