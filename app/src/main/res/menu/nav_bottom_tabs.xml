@@ -6,19 +6,11 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/friends_tab"
-        android:icon="@drawable/ic_people_black_24dp"
-        android:title="Friends" />
-    <item
         android:id="@+id/record_tab"
         android:icon="@drawable/record_mic"
         android:title="Record" />
 
 
-    <item
-        android:id="@+id/likes_tab"
-        android:icon="@drawable/ic_favorite_black_24dp"
-        android:title="Likes" />
     <item
         android:id="@+id/account_tab"
         android:icon="@drawable/ic_person_black_24dp"

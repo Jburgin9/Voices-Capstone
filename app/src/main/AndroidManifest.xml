@@ -16,9 +16,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".views.CommentActivity"></activity>
         <activity android:name=".views.BaseActivity" />
-        <activity android:name=".views.LikesActivity" />
         <activity android:name=".views.FeedActivity" />
-        <activity android:name=".views.SettingsActivity" />
         <activity android:name=".views.ProfileActivity" />
         <activity android:name=".views.RecordActivity" />
         <activity android:name=".views.RegisterActivity" />

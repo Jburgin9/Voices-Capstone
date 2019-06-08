@@ -92,6 +92,7 @@ public class ProfileActivity extends BaseActivity {
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
         audioFile = getExternalCacheDir().getAbsolutePath();
+
         retrieveUserInfo();
         getListfromdb();
 //        navigationItemSelected();
@@ -109,7 +110,7 @@ public class ProfileActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
-                            userInfo = new UserModel(document.get("userName").toString(),document.get("userId").toString(), document.get("imageUrl").toString(),
+                            userInfo = new UserModel(document.get("userName").toString(), document.get("userId").toString(), document.get("imageUrl").toString(),
                                     document.get("aboutMe").toString());
 
                             aboutME.setText(userInfo.getAboutMe());
@@ -138,6 +139,8 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void getListfromdb() {
+
+
         db.collection("users").document(currentUserUID).collection("audio")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -148,12 +151,13 @@ public class ProfileActivity extends BaseActivity {
                                 audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser()));
 
                             }
-                            voicesAdapter = new VoicesAdapter(audioList);
-                            recyclerView.setAdapter(voicesAdapter);
+
 
                         } else {
                             Log.d("help", "Error getting documents: ", task.getException());
                         }
+                        voicesAdapter = new VoicesAdapter(audioList);
+                        recyclerView.setAdapter(voicesAdapter);
                     }
                 });
 
