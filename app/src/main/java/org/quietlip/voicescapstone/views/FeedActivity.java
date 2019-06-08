@@ -28,6 +28,7 @@ import com.squareup.picasso.Picasso;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
+import org.quietlip.voicescapstone.recyclerview.FeedAdapter;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
@@ -40,7 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FeedActivity extends BaseActivity {
 
-    private VoicesAdapter voicesAdapter;
+    private FeedAdapter feedAdapter;
     private RecyclerView recyclerView;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -87,8 +88,8 @@ public class FeedActivity extends BaseActivity {
                                                         feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user));
 
                                                     }
-                                                    voicesAdapter = new VoicesAdapter(feedAudioList);
-                                                    recyclerView.setAdapter(voicesAdapter);
+                                                    feedAdapter = new FeedAdapter(feedAudioList);
+                                                    recyclerView.setAdapter(feedAdapter);
 
 
                                                 } else {
