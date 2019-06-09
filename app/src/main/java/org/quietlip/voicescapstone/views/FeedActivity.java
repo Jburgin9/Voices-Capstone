@@ -85,7 +85,7 @@ public class FeedActivity extends BaseActivity {
                                                 if (task.isSuccessful()) {
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                                         HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user));
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user,document.getId()));
 
                                                     }
                                                     feedAdapter = new FeedAdapter(feedAudioList);

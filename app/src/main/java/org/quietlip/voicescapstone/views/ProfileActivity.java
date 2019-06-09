@@ -135,7 +135,7 @@ public class ProfileActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser()));
+                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser(), document.getId()));
 
                             }
 

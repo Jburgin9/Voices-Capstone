@@ -52,12 +52,12 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private TextView username;
     private ImageButton commentMic;
 
-
+    private String userid;
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
 
 
-    AudioModel audioModel;
+    private String audioId;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -71,13 +71,12 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
-//        audioModel = audio;
-//        UserModel user = audio.getUser();
-//        String username1 = user.getUserName();
-////        audio.getUser().getImageUrl();
+        audioId = audio.getAudioId();
 
         UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         String currentUserName = user1.getUserName();
+        userid = user1.getUserId();
+
         username.setText(currentUserName);
         Log.e("currentUser", currentUserName);
         Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
@@ -106,15 +105,13 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-   commentMic.setOnClickListener(new View.OnClickListener()
+        commentMic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToCommentActivity();
 
-    {
-        @Override
-        public void onClick (View v){
-        goToCommentActivity();
-
-        }
-    });
+            }
+        });
 
     }
 
@@ -134,8 +131,11 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer.release();
         mediaPlayer = null;
     }
+
     private void goToCommentActivity() {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
+        commentActivityIntent.putExtra("userid", userid);
+        commentActivityIntent.putExtra("audioid",audioId);
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
