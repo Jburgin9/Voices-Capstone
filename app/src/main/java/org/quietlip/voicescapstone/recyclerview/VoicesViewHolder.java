@@ -76,7 +76,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         String currentUserName = user1.getUserName();
         userid = user1.getUserId();
-
         username.setText(currentUserName);
         Log.e("currentUser", currentUserName);
         Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
