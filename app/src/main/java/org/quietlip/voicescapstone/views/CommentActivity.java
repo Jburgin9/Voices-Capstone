@@ -19,8 +19,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -58,7 +61,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentActivity extends BaseActivity {
     String users = "users";
-    //    String commentList1 = "commentlist";
+    String commentList1 = "commentlist";
     private ProgressDialog progressDialog;
 
     private BottomNavigationView navigationView;
@@ -69,6 +72,11 @@ public class CommentActivity extends BaseActivity {
     private Button post;
     private EditText titleInput;
     private RecyclerView recyclerView;
+    private ImageView parentImage;
+    private TextView parentUsername;
+    private ImageButton parentPlay;
+    private SeekBar parentSeekBar;
+    private TextView parentTitle;
 
     private boolean mPlay = true;
     private boolean mRecord = true;
@@ -110,7 +118,11 @@ public class CommentActivity extends BaseActivity {
         post = findViewById(R.id.post_button_comment);
         titleInput = findViewById(R.id.title_input_comment);
         recyclerView = findViewById(R.id.comment_recycler);
-
+        parentImage = findViewById(R.id.parent_comment_image);
+        parentUsername = findViewById(R.id.parent_comment_username);
+        parentPlay = findViewById(R.id.parent_comment_play);
+        parentSeekBar = findViewById(R.id.parent_comment_seekbar);
+        parentTitle = findViewById(R.id.parent_comment_title);
 
         navigationView = findViewById(R.id.bottom_nav);
         setBottomNav(navigationView);
@@ -235,6 +247,7 @@ public class CommentActivity extends BaseActivity {
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
 
             }
         });
@@ -256,6 +269,7 @@ public class CommentActivity extends BaseActivity {
                                 Log.w("test", "Error adding document", e);
                             }
                         });
+                progressDialog.dismiss();
             }
         });
     }
