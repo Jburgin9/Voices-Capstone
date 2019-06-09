@@ -13,6 +13,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -27,16 +28,20 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.value.StringValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.CommentAdapter;
+import org.quietlip.voicescapstone.recyclerview.FeedAdapter;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
@@ -45,6 +50,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -79,6 +85,10 @@ public class CommentActivity extends BaseActivity {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
     String format = simpleDateFormat.format(new Date());
 
+    String currentAudioId;
+    String audioId;
+
+    String userId;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
@@ -87,6 +97,11 @@ public class CommentActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Context context;
+
+
+        userId = getIntent().getStringExtra("userid");
+        currentAudioId = getIntent().getStringExtra("audioid");
+
         progressDialog = new ProgressDialog(this);
         setContentView(R.layout.activity_comment);
         record = findViewById(R.id.record_button_comment);
@@ -94,7 +109,6 @@ public class CommentActivity extends BaseActivity {
         post = findViewById(R.id.post_button_comment);
         titleInput = findViewById(R.id.title_input_comment);
         recyclerView = findViewById(R.id.comment_recycler);
-
 
 
         navigationView = findViewById(R.id.bottom_nav);
@@ -108,6 +122,7 @@ public class CommentActivity extends BaseActivity {
         setRecordAudioOnClick();
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
+        retrieveComments();
     }
 
     private void setPlayAudioBackOnClick() {
@@ -159,30 +174,39 @@ public class CommentActivity extends BaseActivity {
         });
     }
 
-    private void getListFromDatabase() {
-        db.collection("users").document(currentUserUID).collection("audio").document("comments").collection("commentlist").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getCurrentUser()));
 
+    private void retrieveComments() {
+        db.collection("users").document(userId).collection("audio").document(currentAudioId).collection("commentlist").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Log.d(CommentActivity.class.getName(), "onComplete: " + document);
+                                HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+                                final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
+                                        usermap.get("imageUrl"),usermap.get("aboutMe"));
+                                commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
+
+
+                            }
+                            commentAdapter = new CommentAdapter(commentList);
+                            recyclerView.setAdapter(commentAdapter);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            progressDialog.dismiss();
+                        } else {
+                            Log.d("help", "Error getting documents: ", task.getException());
+                        }
                     }
+                });
 
-
-                } else {
-                    Log.d("help", "Error getting documents: ", task.getException());
-                }
-                commentAdapter = new CommentAdapter(commentList);
-                recyclerView.setAdapter(commentAdapter);
-            }
-        });
     }
 
     private void uploadAudio() {
         progressDialog.setMessage("Uploading Audio...");
         progressDialog.show();
-        StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
+        audioId = String.valueOf(System.currentTimeMillis());
+        StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(audioId));
         final Uri uri = Uri.fromFile(new File(audioFile));
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -193,14 +217,13 @@ public class CommentActivity extends BaseActivity {
         filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser());
-                db.collection(users).document(currentUserUID).collection("audio").document("comments").collection("commentlist")
-                        .add(audioModel)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser(), audioId);
+                db.collection(users).document(userId).collection("audio").document(currentAudioId).collection("commentlist")
+                        .document(audioId).set(audioModel)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                getListFromDatabase();
-                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
+                            public void onSuccess(Void aVoid) {
+                                retrieveComments();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {

@@ -78,6 +78,8 @@ public class RecordActivity extends BaseActivity {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
     String format = simpleDateFormat.format(new Date());
 
+    String newAudioModelId;
+
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
 
@@ -141,9 +143,9 @@ public class RecordActivity extends BaseActivity {
     }
 
     private void askPermission() {
-        if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-           ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
-                   2);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(recordActivity, new String[]{Manifest.permission.RECORD_AUDIO},
+                    2);
         }
         //else do something
     }
@@ -175,7 +177,8 @@ public class RecordActivity extends BaseActivity {
     private void uploadAudio() {
         progressDialog.setMessage("Uploading Audio...");
         progressDialog.show();
-        StorageReference filepath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(System.currentTimeMillis()));
+        newAudioModelId = String.valueOf(System.currentTimeMillis());
+        StorageReference filepath = mStorageRef.child(currentUserUID).child(audioFolderName).child(newAudioModelId);
         final Uri uri = Uri.fromFile(new File(audioFile));
         filepath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -187,27 +190,31 @@ public class RecordActivity extends BaseActivity {
             }
         });
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(),CurrentUserManager.getInstance().getCurrentUser());
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),newAudioModelId);
                 db.collection(users).document(currentUserUID).collection("audio")
-                        .add(audioModel)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                goToProfile();
-                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("test", "Error adding document", e);
-                            }
-                        });
+                        .document(newAudioModelId).set(audioModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        goToProfile();
+                    }
+                })
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                documentReference.getId();
+//                                goToProfile();
+//                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.w("test", "Error adding document", e);
+//                            }
+//                        });
                 ;
 
 

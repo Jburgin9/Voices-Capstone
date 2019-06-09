@@ -3,14 +3,17 @@ package org.quietlip.voicescapstone.models;
 public class AudioModel {
     private String uri;
     private String title;
+    private String audioId;
+
 
     private UserModel user;
 
 
-    public AudioModel(String uri, String audioTitle, UserModel user) {
+    public AudioModel(String uri, String audioTitle, UserModel user, String audioId) {
         this.uri = uri;
         this.title = audioTitle;
         this.user = user;
+        this.audioId = audioId;
     }
 
     public String getUri() {
@@ -37,5 +40,11 @@ public class AudioModel {
         this.user = user;
     }
 
+    public String getAudioId() {
+        return audioId;
+    }
 
+    public void setAudioId(String audioId) {
+        this.audioId = audioId;
+    }
 }
