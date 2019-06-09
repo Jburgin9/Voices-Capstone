@@ -1,16 +1,17 @@
 package org.quietlip.voicescapstone.recyclerview;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -59,6 +60,9 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
     private CircleImageView profilePic;
     private TextView username;
     private ImageButton commentMic;
+    private SeekBar durationSb;
+    private Handler handler;
+    private Runnable runnable;
 
 
     private MediaPlayer mediaPlayer;
@@ -76,9 +80,32 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         profilePic = itemView.findViewById(R.id.profile_image);
         username = itemView.findViewById(R.id.profile_username);
         commentMic = itemView.findViewById(R.id.profile_mic);
+        handler = new Handler();
+        durationSb = itemView.findViewById(R.id.profile_seekbar);
     }
 
     public void onBind(final AudioModel audio) {
+        if(durationSb != null) {
+            durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        mediaPlayer.seekTo(progress);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+        }
+
         title.setText(audio.getTitle());
         audioModel = audio;
         audioId = audio.getAudioId();
@@ -101,6 +128,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
+                    changeSeekBar();
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
                     play.setImageResource(R.drawable.stop);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
@@ -127,8 +155,18 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(context, audio);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+
+                        durationSb.setMax(mediaPlayer.getDuration());
+                        mediaPlayer.start();
+                        changeSeekBar();
+
+                }
+            });
+
+            mediaPlayer.prepareAsync();
             Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
             Log.e("VIEW HOLDER", "prepare() failed");
@@ -145,4 +183,21 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
+
+    private void changeSeekBar(){
+        if(mediaPlayer != null) {
+            durationSb.setProgress(mediaPlayer.getCurrentPosition());
+
+            if (mediaPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
+    }
+
 }

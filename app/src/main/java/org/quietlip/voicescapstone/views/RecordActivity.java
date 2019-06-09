@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -53,6 +55,9 @@ public class RecordActivity extends BaseActivity {
     private BottomNavigationView navigation;
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
+    private SeekBar durationSb;
+    private Handler handler;
+    private Runnable runnable;
 
     private CircleImageView record;
     private ImageView play;
@@ -95,10 +100,11 @@ public class RecordActivity extends BaseActivity {
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
 
-
         recordActivity = this;
 
-
+        mediaRecorder = new MediaRecorder();
+        durationSb = findViewById(R.id.progress_bar);
+        handler = new Handler();
         record = findViewById(R.id.record_button1);
         play = findViewById(R.id.play_button);
         post = findViewById(R.id.post_button);
@@ -111,6 +117,26 @@ public class RecordActivity extends BaseActivity {
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
 
+
+        durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     private void setPlayAudioBackOnClick() {
@@ -122,6 +148,7 @@ public class RecordActivity extends BaseActivity {
                 if (mPlay) {
                     play.setImageResource(R.drawable.stop);
                     startPlaying();
+                    changeSeekBar();
                 } else {
                     play.setImageResource(R.drawable.play_button);
                     stopPlaying();
@@ -190,41 +217,33 @@ public class RecordActivity extends BaseActivity {
             }
         });
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                 AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),newAudioModelId);
                 db.collection(users).document(currentUserUID).collection("audio")
-                        .document(newAudioModelId).set(audioModel).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        goToProfile();
-                    }
-                })
-//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                            @Override
-//                            public void onSuccess(DocumentReference documentReference) {
-//                                documentReference.getId();
-//                                goToProfile();
-//                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w("test", "Error adding document", e);
-//                            }
-//                        });
-                ;
-
+                        .add(audioModel)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                goToProfile();
+                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("test", "Error adding document", e);
+                            }
+                        });
 
                 progressDialog.dismiss();
-
 
             }
         });
     }
-
 
     @Override
     public void onStop() {
@@ -253,12 +272,15 @@ public class RecordActivity extends BaseActivity {
 
     private void startPlaying() {
         mediaPlayer = new MediaPlayer();
+
         try {
             mediaPlayer.setDataSource(audioFile);
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    durationSb.setMax(mediaPlayer.getDuration());
                     mediaPlayer.start();
+                    changeSeekBar();
                 }
             });
             mediaPlayer.prepareAsync();
@@ -300,6 +322,22 @@ public class RecordActivity extends BaseActivity {
 
         } catch (RuntimeException stopException) {
             Log.e("stoprecord", "failed");
+        }
+    }
+
+    private void changeSeekBar(){
+        if(mediaPlayer != null) {
+            durationSb.setProgress(mediaPlayer.getCurrentPosition());
+
+            if (mediaPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
         }
     }
 

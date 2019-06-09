@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.data.model.User;
@@ -51,10 +53,12 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private CircleImageView profilePic;
     private TextView username;
     private ImageButton commentMic;
-
+    private SeekBar durationSb;
 
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
+    private Handler handler;
+    private Runnable runnable;
 
     private String userid;
     private String audioId;
@@ -65,11 +69,31 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         title = itemView.findViewById(R.id.profile_title);
         profilePic = itemView.findViewById(R.id.profile_image);
         username = itemView.findViewById(R.id.profile_username);
-
+        handler = new Handler();
+        durationSb = itemView.findViewById(R.id.profile_seekbar);
         commentMic = itemView.findViewById(R.id.profile_mic);
     }
 
     public void onBind(final AudioModel audio) {
+        durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+                if(fromUser){
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
 
@@ -92,6 +116,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
+                    changeSeekBar();
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
                     play.setImageResource(R.drawable.stop);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
@@ -116,10 +141,21 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
     private void startPlaying(Context context, Uri audio) {
         mediaPlayer = new MediaPlayer();
+        Log.d(VoicesViewHolder.class.getName(), "startPlaying: " + audio);
         try {
             mediaPlayer.setDataSource(context, audio);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+           // mediaPlayer.prepare();
+
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    durationSb.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
+                    changeSeekBar();
+                }
+            });
+
+            mediaPlayer.prepareAsync();
             Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
             Log.e("VIEW HOLDER", "prepare() failed");
@@ -130,13 +166,27 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer.release();
         mediaPlayer = null;
     }
-
     private void goToCommentActivity() {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
         commentActivityIntent.putExtra("userid", userid);
         commentActivityIntent.putExtra("audioid",audioId);
         itemView.getContext().startActivity(commentActivityIntent);
 
+    }
+
+    private void changeSeekBar(){
+        if(mediaPlayer != null) {
+            durationSb.setProgress(mediaPlayer.getCurrentPosition());
+            if (mediaPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
     }
 }
 
