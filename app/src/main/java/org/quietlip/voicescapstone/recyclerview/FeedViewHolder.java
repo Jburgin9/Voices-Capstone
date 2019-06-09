@@ -25,6 +25,31 @@ import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
+
+import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.models.UserModel;
+import org.quietlip.voicescapstone.views.CommentActivity;
+
+import java.io.IOException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -41,6 +66,8 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
 
     AudioModel audioModel;
+    private String userid;
+    private String audioId;
 
     public FeedViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -54,7 +81,9 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
         audioModel = audio;
+        audioId = audio.getAudioId();
         UserModel user = audio.getUser();
+        userid = user.getUserId();
         String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
