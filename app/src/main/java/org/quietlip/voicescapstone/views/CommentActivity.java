@@ -32,6 +32,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.Document;
 import com.google.firebase.firestore.model.value.StringValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -124,6 +125,29 @@ public class CommentActivity extends BaseActivity {
         setPostAudioOnClick();
         retrieveComments();
     }
+//    private void retrieveParentAudio(){
+//        db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
+//        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+//                        final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
+//                                usermap.get("imageUrl"),usermap.get("aboutMe"));
+//                        commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
+//
+//                    }
+//                    commentAdapter = new CommentAdapter(commentList);
+//                    recyclerView.setAdapter(commentAdapter);
+//                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//                    progressDialog.dismiss();
+//                } else
+//                    {
+//                Log.d("help", "Error getting documents: ", task.getException());
+//    }
+//        });
+//
+//    }
 
     private void setPlayAudioBackOnClick() {
         play.setOnClickListener(new View.OnClickListener() {

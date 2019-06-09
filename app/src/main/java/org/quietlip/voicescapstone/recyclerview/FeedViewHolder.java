@@ -40,7 +40,8 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
     private boolean mPlay = true;
 
 
-    AudioModel audioModel;
+    private String audioId;
+    private String userid;
 
     public FeedViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -53,12 +54,15 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
-        audioModel = audio;
-        UserModel user = audio.getUser();
-        String username1 = user.getUserName();
-        username.setText(username1);
-        Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
+        audioId = audio.getAudioId();
 
+        UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
+        String currentUserName = user1.getUserName();
+        userid = user1.getUserId();
+
+        username.setText(currentUserName);
+        Log.e("currentUser", currentUserName);
+        Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
 
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,8 +117,9 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     private void goToCommentActivity() {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
+        commentActivityIntent.putExtra("userid", userid);
+        commentActivityIntent.putExtra("audioid",audioId);
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
-
 }
