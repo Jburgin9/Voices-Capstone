@@ -13,6 +13,8 @@
         android:layout_height="110dp"
         android:background="@color/colorPrimary"
         android:padding="10dp"
+        app:cardCornerRadius="4dp"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
