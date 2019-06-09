@@ -56,6 +56,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/profile_image"
                 app:layout_constraintVertical_bias="0.571" />
 
+            <ImageView
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="40dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profile_seekbar" />
+
             <ImageButton
                 android:id="@+id/profile_play"
                 android:layout_width="39dp"
