@@ -52,11 +52,11 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private TextView username;
     private ImageButton commentMic;
 
-    private String userid;
+
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
 
-
+    private String userid;
     private String audioId;
 
     public VoicesViewHolder(@NonNull View itemView) {
