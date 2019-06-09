@@ -13,6 +13,8 @@
         android:layout_height="110dp"
         android:background="@color/colorPrimary"
         android:padding="10dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -83,22 +85,6 @@
                 android:layout_toRightOf="@+id/comment_play"
                 android:background="@drawable/accent_border"
                 android:src="@drawable/soundwave"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <ImageButton
-                android:id="@+id/comment_mic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/comment_play"
-                android:layout_alignParentEnd="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="44dp"
-                android:layout_toRightOf="@id/comment_seekbar"
-                android:background="@color/colorPrimary"
-                android:onClick="recordAudio"
-                android:src="@drawable/ic_mic_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

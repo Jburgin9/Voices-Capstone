@@ -158,7 +158,7 @@ public class ProfileActivity extends BaseActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPlay){
+                if (play.isSelected()){
                     play.setImageResource(R.drawable.stop);
                     startPlay();
                 } else {

@@ -1,5 +1,6 @@
 package org.quietlip.voicescapstone.recyclerview;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -18,7 +19,6 @@ import com.squareup.picasso.Picasso;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
-import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.views.CommentActivity;
 
 import java.io.IOException;
@@ -82,7 +82,6 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         title.setText(audio.getTitle());
         audioModel = audio;
         audioId = audio.getAudioId();
-
         UserModel user = audio.getUser();
         userid = user.getUserId();
         String username1 = user.getUserName();
@@ -143,8 +142,6 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     private void goToCommentActivity() {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
-        commentActivityIntent.putExtra("userid", userid);
-        commentActivityIntent.putExtra("audioid",audioId);
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
