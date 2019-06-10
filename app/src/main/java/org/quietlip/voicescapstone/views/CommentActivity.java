@@ -40,6 +40,7 @@ import com.google.firebase.firestore.model.value.StringValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
@@ -72,6 +73,10 @@ public class CommentActivity extends BaseActivity {
     private Button post;
     private EditText titleInput;
     private RecyclerView recyclerView;
+    private ImageView divider;
+
+
+
     private ImageView parentImage;
     private TextView parentUsername;
     private ImageButton parentPlay;
@@ -118,6 +123,8 @@ public class CommentActivity extends BaseActivity {
         post = findViewById(R.id.post_button_comment);
         titleInput = findViewById(R.id.title_input_comment);
         recyclerView = findViewById(R.id.comment_recycler);
+        divider = findViewById(R.id.divider);
+
         parentImage = findViewById(R.id.parent_comment_image);
         parentUsername = findViewById(R.id.parent_comment_username);
         parentPlay = findViewById(R.id.parent_comment_play);
@@ -135,31 +142,47 @@ public class CommentActivity extends BaseActivity {
         setRecordAudioOnClick();
         setPlayAudioBackOnClick();
         setPostAudioOnClick();
+        retrieveParentAudio();
         retrieveComments();
     }
-//    private void retrieveParentAudio(){
-//        db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
-//        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-//                        final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
-//                                usermap.get("imageUrl"),usermap.get("aboutMe"));
-//                        commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
-//
-//                    }
-//                    commentAdapter = new CommentAdapter(commentList);
-//                    recyclerView.setAdapter(commentAdapter);
-//                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-//                    progressDialog.dismiss();
-//                } else
-//                    {
-//                Log.d("help", "Error getting documents: ", task.getException());
-//    }
-//        });
-//
-//    }
+    private void retrieveParentAudio(){
+        db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
+        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+                    final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
+                            usermap.get("imageUrl"),usermap.get("aboutMe"));
+                        AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
+
+
+
+                    parentUsername.setText(user.getUserName());
+                    parentTitle.setText((audio.getTitle()));
+                    Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
+
+                    parentPlay.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mPlay) {
+                                play.setImageResource(R.drawable.stop);
+                                startPlaying();
+                            } else {
+                                play.setImageResource(R.drawable.play_button);
+                                stopPlaying();
+                            }
+                            mPlay = !mPlay;
+
+                        }
+                    });
+                }
+
+            }
+        });
+
+    }
 
     private void setPlayAudioBackOnClick() {
         play.setOnClickListener(new View.OnClickListener() {

@@ -50,6 +50,8 @@ public class ProfileActivity extends BaseActivity {
     private CircleImageView profile_pic;
     private TextView aboutME;
     private TextView userName;
+    private ImageView divider;
+
 
     private VoicesAdapter voicesAdapter;
     private RecyclerView recyclerView;
@@ -78,6 +80,7 @@ public class ProfileActivity extends BaseActivity {
         profile_pic = findViewById(R.id.profile_image);
         aboutME = findViewById(R.id.about_me);
         userName = findViewById(R.id.user_name);
+        divider = findViewById(R.id.divider);
 
         audioList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
