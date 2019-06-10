@@ -24,7 +24,6 @@
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
             android:background="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -34,16 +33,14 @@
                 android:layout_width="77dp"
                 android:layout_height="73dp"
                 android:layout_marginStart="12dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/linda"
                 app:civ_border_color="@color/colorAccent"
                 app:civ_border_width="1dp"
                 app:layout_constraintEnd_toStartOf="@+id/parent_comment_seekbar"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.08"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/parent_comment_username"
@@ -59,10 +56,22 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.028"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/parent_comment_image"
-                app:layout_constraintVertical_bias="0.571" />
+                app:layout_constraintVertical_bias="0.8" />
+
+            <ImageView
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/parent_comment_seekbar"
+                app:layout_constraintVertical_bias="1.0" />
 
             <ImageButton
                 android:id="@+id/parent_comment_play"
@@ -133,15 +142,13 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/comment_recycler"
-        android:layout_width="357dp"
-        android:layout_height="273dp"
+        android:layout_width="355dp"
+        android:layout_height="453dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@id/record_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/cardView2">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -149,47 +156,55 @@
         android:id="@+id/record_card"
         android:layout_width="match_parent"
         android:layout_height="110dp"
-        android:layout_marginTop="196dp"
-        android:layout_marginBottom="8dp"
-        android:elevation="8dp"
-        app:cardCornerRadius="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/comment_recycler"
-        app:layout_constraintBottom_toBottomOf="@id/bottom_nav">
+        app:layout_constraintRight_toRightOf="parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/record_button_comment"
-                android:layout_width="60dp"
-                android:layout_height="70dp"
+                android:layout_width="81dp"
+                android:layout_height="78dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:src="@drawable/recordoff2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/play_button_comment"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/play_button_comment"
-                android:layout_width="50dp"
-                android:layout_height="37dp"
-                android:layout_marginStart="84dp"
-                android:layout_marginTop="4dp"
+                android:layout_width="41dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:baselineAlignBottom="true"
                 android:src="@drawable/play_button"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/progress_bar"
                 app:layout_constraintHorizontal_bias="0.808"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <SeekBar
                 android:id="@+id/progress_bar_comment"
@@ -201,44 +216,46 @@
                 android:background="@drawable/accent_border"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.162"
                 app:layout_constraintStart_toEndOf="@+id/play_button_comment"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.112" />
 
 
             <EditText
                 android:id="@+id/title_input_comment"
-                android:layout_width="153dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="112dp"
+                android:layout_width="140dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="152dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/accent_border"
                 android:hint="ENTER TITLE"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
                 android:textSize="10sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/post_button_comment"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.789"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progress_bar_comment" />
+                app:layout_constraintTop_toBottomOf="@+id/progress_bar_comment"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/post_button_comment"
                 android:layout_width="70dp"
-                android:layout_height="34dp"
+                android:layout_height="30dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/accent_border"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/filled_border"
                 android:text="Post"
-                android:textColor="@color/colorAccent"
-                app:layout_constraintTop_toBottomOf="@+id/comment_seekbar"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.876"
+                app:layout_constraintHorizontal_bias="0.916"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="44dp" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.958" />
         </android.support.constraint.ConstraintLayout>
 
 
