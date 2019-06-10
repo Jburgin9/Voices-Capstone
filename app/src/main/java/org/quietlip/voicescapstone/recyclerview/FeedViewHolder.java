@@ -53,6 +53,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FeedViewHolder extends RecyclerView.ViewHolder {
 
+    private static final String TAG = "PROUD";
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private AppCompatImageButton play;
@@ -89,9 +91,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
             durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
                         mediaPlayer.seekTo(progress);
-                    }
                 }
 
                 @Override
@@ -130,7 +130,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
                 if (mPlay) {
                     changeSeekBar();
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                    play.setImageResource(R.drawable.stop);
+                    play.setImageResource(R.drawable.ic_stopp);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
@@ -153,23 +153,27 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     private void startPlaying(Context context, Uri audio) {
         mediaPlayer = new MediaPlayer();
+
         try {
             mediaPlayer.setDataSource(context, audio);
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-
+                    Log.d(TAG, "onPrepared: ");
                         durationSb.setMax(mediaPlayer.getDuration());
-                        mediaPlayer.start();
+
+
                         changeSeekBar();
+                    mediaPlayer.prepareAsync();
 
                 }
             });
+            mediaPlayer.start();
 
-            mediaPlayer.prepareAsync();
+
             Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
-            Log.e("VIEW HOLDER", "prepare() failed");
+           // Log.e("VIEW HOLDER", "prepare() failed");
         }
     }
 

@@ -78,9 +78,8 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
-                if(fromUser){
                     mediaPlayer.seekTo(progress);
-                }
+
             }
 
             @Override
@@ -97,13 +96,16 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
 
-        UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
-        String currentUserName = user1.getUserName();
-        userid = user1.getUserId();
-        username.setText(currentUserName);
-        Log.e("currentUser", currentUserName);
-        Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
 
+
+        UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
+        if(user1 != null) {
+            String currentUserName = user1.getUserName();
+            userid = user1.getUserId();
+            username.setText(currentUserName);
+            Log.e("currentUser", currentUserName);
+            Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
+        }
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +120,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                 if (mPlay) {
                     changeSeekBar();
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                    play.setImageResource(R.drawable.stop);
+                    play.setImageResource(R.drawable.ic_stopp);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
