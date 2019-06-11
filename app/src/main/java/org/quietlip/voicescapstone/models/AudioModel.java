@@ -14,11 +14,13 @@ public class AudioModel {
         this.title = audioTitle;
         this.user = user;
         this.audioId = audioId;
+
     }
 
     public String getUri() {
         return uri;
     }
+
 
     public void setUri(String uri) {
         this.uri = uri;
