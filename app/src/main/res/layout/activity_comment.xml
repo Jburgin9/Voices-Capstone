@@ -16,6 +16,7 @@
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:padding="10dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -142,10 +143,11 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/comment_recycler"
-        android:layout_width="355dp"
-        android:layout_height="453dp"
+        android:layout_width="411dp"
+        android:layout_height="441dp"
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/record_card"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView2">
