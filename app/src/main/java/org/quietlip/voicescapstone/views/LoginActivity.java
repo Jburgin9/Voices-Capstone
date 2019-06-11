@@ -22,6 +22,7 @@ import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
     private EditText usernameInputET, passwordInputET;
     private Button loginBtn, signUpBTN;
     private ImageView logoIV;
