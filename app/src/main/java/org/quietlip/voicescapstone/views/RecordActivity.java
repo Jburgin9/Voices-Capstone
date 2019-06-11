@@ -41,13 +41,16 @@ import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.opencensus.tags.Tag;
 
 public class RecordActivity extends BaseActivity {
+
 
     String users = "users";
     String userlist = "userlist";
@@ -69,7 +72,7 @@ public class RecordActivity extends BaseActivity {
 
     private RecordActivity recordActivity;
 
-
+    private String dateFormatted;
     private static String audioFile;
     private final String audioFolderName = "audio";
 
@@ -101,6 +104,12 @@ public class RecordActivity extends BaseActivity {
         setBottomNav(navigation);
 
         recordActivity = this;
+
+//        Date date = new Date(System.currentTimeMillis());
+//        String pattern = "EEE, d MMM yyyy HH:mm:ss Z";
+//        DateFormat formatter = new SimpleDateFormat(pattern);
+//        formatter.setTimeZone(TimeZone.getTimeZone("EST"));
+//        dateFormatted = formatter.format(date);
 
         mediaRecorder = new MediaRecorder();
         durationSb = findViewById(R.id.progress_bar);
