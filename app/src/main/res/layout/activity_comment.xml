@@ -269,6 +269,7 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:elevation="4dp"
+        android:background="@color/colorPrimary"
         app:itemIconTint="@color/colorPrimaryDark"
         app:itemTextColor="@color/colorPrimaryDark"
         app:labelVisibilityMode="labeled"
