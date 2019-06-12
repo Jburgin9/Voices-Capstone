@@ -45,6 +45,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class VoicesViewHolder extends RecyclerView.ViewHolder {
+    private static final String TAG = "PROUD";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -63,6 +64,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private String userid;
     private String audioId;
     private String pathId;
+    private StorageReference stRef;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -73,15 +75,16 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         handler = new Handler();
         durationSb = itemView.findViewById(R.id.profile_seekbar);
         commentMic = itemView.findViewById(R.id.profile_mic);
+        duratonSeek();
     }
 
     public void onBind(final AudioModel audio) {
-        duratonSeek();
+
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
         pathId = audio.getPathId();
 
-        UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
+        final UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         if(user1 != null) {
             String currentUserName = user1.getUserName();
             userid = user1.getUserId();
@@ -104,17 +107,26 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPlay) {
-                    changeSeekBar();
-//                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                    play.setImageResource(R.drawable.ic_stopp);
-                    startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
-                } else {
-                    play.setImageResource(R.drawable.play_button);
-                    stopPlaying();
-                }
-                mPlay = !mPlay;
+                stRef = FirebaseStorage.getInstance().getReference(user1.getUserId()).child("audio").child(audioId);
+                Log.d(TAG, "onClick: " + audioId);
+                stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        if (mPlay) {
 
+//                    Picasso.get().load(R.drawable.stop).fit().into(play);
+                            play.setImageResource(R.drawable.ic_stopp);
+                            startPlaying(itemView.getContext(), uri);
+                            changeSeekBar();
+                            //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+                        } else {
+                            play.setImageResource(R.drawable.play_button);
+                            stopPlaying();
+
+                        }
+                        mPlay = !mPlay;
+                    }
+                });
             }
         });
 
@@ -196,6 +208,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
 }
 
 

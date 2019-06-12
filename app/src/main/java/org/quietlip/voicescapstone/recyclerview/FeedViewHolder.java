@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,6 +43,10 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
     private String userid;
     private String audioId;
     private StorageReference stRef;
+    private SeekBar durationSb;
+    private Handler handler;
+    private Runnable runnable;
+
     public FeedViewHolder(@NonNull View itemView) {
         super(itemView);
         play = itemView.findViewById(R.id.profile_play);
@@ -48,11 +54,35 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         profilePic = itemView.findViewById(R.id.profile_image);
         username = itemView.findViewById(R.id.profile_username);
         commentMic = itemView.findViewById(R.id.profile_mic);
+        durationSb = itemView.findViewById(R.id.profile_seekbar);
+        handler = new Handler();
+
+        durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser){
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
+
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
         audioModel = audio;
         audioId = audio.getAudioId();
+
 
         final UserModel user = audio.getUser();
         userid = user.getUserId();
@@ -73,6 +103,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
                             play.setImageResource(R.drawable.ic_stopp);
                             startPlaying(itemView.getContext(), uri);
+                            changeSeekBar();
                             //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                         } else {
                             play.setImageResource(R.drawable.play_button);
@@ -96,8 +127,16 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(context, audio);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    durationSb.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
+                    changeSeekBar();
+                }
+            });
+
+            mediaPlayer.prepareAsync();
             Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
             Log.e("VIEW HOLDER", "prepare() failed");
@@ -114,6 +153,21 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         commentActivityIntent.putExtra("audioid",audioId);
         itemView.getContext().startActivity(commentActivityIntent);
 
+    }
+
+    private void changeSeekBar() {
+        if (mediaPlayer != null) {
+            durationSb.setProgress(mediaPlayer.getCurrentPosition());
+            if (mediaPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
     }
 }//    profilePic.setOnClickListener(new View.OnClickListener() {
 //        @Override
