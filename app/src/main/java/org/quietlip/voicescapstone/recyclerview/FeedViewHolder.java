@@ -13,7 +13,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
@@ -25,6 +28,7 @@ import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 public class FeedViewHolder extends RecyclerView.ViewHolder {
+    private static final String TAG = "PROUD";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private AppCompatImageButton play;
     private TextView title;
@@ -36,6 +40,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
     AudioModel audioModel;
     private String userid;
     private String audioId;
+    private StorageReference stRef;
     public FeedViewHolder(@NonNull View itemView) {
         super(itemView);
         play = itemView.findViewById(R.id.profile_play);
@@ -49,7 +54,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         audioModel = audio;
         audioId = audio.getAudioId();
 
-        UserModel user = audio.getUser();
+        final UserModel user = audio.getUser();
         userid = user.getUserId();
         String username1 = user.getUserName();
         username.setText(username1);
@@ -58,14 +63,25 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPlay) {
-                    play.setImageResource(R.drawable.ic_stopp);
-                    startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
-                } else {
-                    play.setImageResource(R.drawable.play_button);
-                    stopPlaying();
-                }
-                mPlay = !mPlay;
+                stRef = FirebaseStorage.getInstance().getReference(user.getUserId()).child("audio").child(audioId);
+                Log.d(TAG, "onClick: " + audioId);
+                stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        if (mPlay) {
+
+//                    Picasso.get().load(R.drawable.stop).fit().into(play);
+                            play.setImageResource(R.drawable.stop);
+                            startPlaying(itemView.getContext(), uri);
+                            //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+                        } else {
+                            play.setImageResource(R.drawable.play_button);
+                            stopPlaying();
+
+                        }
+                        mPlay = !mPlay;
+                    }
+                });
             }
         });
         commentMic.setOnClickListener(new View.OnClickListener() {
