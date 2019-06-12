@@ -33,7 +33,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     AudioModel audioModel;
 
 
-    public CommentViewHolder (@NonNull View itemView) {
+    public CommentViewHolder(@NonNull View itemView) {
         super(itemView);
         play = itemView.findViewById(R.id.comment_play);
         title = itemView.findViewById(R.id.comment_title);
@@ -48,18 +48,19 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(comment_pic);
+
+
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
-                    play.setImageResource(R.drawable.stop);
+                    play.setImageResource(R.drawable.ic_stopp);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
                     stopPlaying();
                 }
                 mPlay = !mPlay;
-
             }
         });
     }
@@ -75,9 +76,9 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
             Log.e("VIEW HOLDER", "prepare() failed");
         }
     }
+
     private void stopPlaying() {
         mediaPlayer.release();
         mediaPlayer = null;
     }
-
 }
