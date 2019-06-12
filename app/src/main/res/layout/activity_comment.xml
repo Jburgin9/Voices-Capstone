@@ -16,7 +16,6 @@
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:padding="10dp"
-        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -270,6 +269,7 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:elevation="4dp"
+        android:background="@color/colorPrimary"
         app:itemIconTint="@color/colorPrimaryDark"
         app:itemTextColor="@color/colorPrimaryDark"
         app:labelVisibilityMode="labeled"
