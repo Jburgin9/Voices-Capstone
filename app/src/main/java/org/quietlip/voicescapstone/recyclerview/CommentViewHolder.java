@@ -3,15 +3,19 @@ package org.quietlip.voicescapstone.recyclerview;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
@@ -23,6 +27,7 @@ import java.io.IOException;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentViewHolder extends RecyclerView.ViewHolder {
+    private static final String TAG = "PROUD";
     private AppCompatImageButton play;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView title;
@@ -31,6 +36,11 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private CircleImageView comment_pic;
     private TextView username;
     AudioModel audioModel;
+    private StorageReference stRef;
+    private SeekBar durationSb;
+    private String audioId;
+    private Handler handler;
+    private Runnable runnable;
 
 
     public CommentViewHolder(@NonNull View itemView) {
@@ -39,12 +49,15 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         title = itemView.findViewById(R.id.comment_title);
         comment_pic = itemView.findViewById(R.id.comment_image);
         username = itemView.findViewById(R.id.comment_username);
+        durationSb = itemView.findViewById(R.id.comment_seekbar);
+        handler = new Handler();
     }
 
     public void onBind(final AudioModel audio) {
         title.setText(audio.getTitle());
+        audioId = audio.getAudioId();
         audioModel = audio;
-        UserModel user = audio.getUser();
+        final UserModel user = audio.getUser();
         String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(comment_pic);
@@ -53,14 +66,26 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPlay) {
-                    play.setImageResource(R.drawable.ic_stopp);
-                    startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
-                } else {
-                    play.setImageResource(R.drawable.play_button);
-                    stopPlaying();
-                }
-                mPlay = !mPlay;
+                stRef = FirebaseStorage.getInstance().getReference(user.getUserId()).child("audio").child(audioId);
+                Log.d(TAG, "onClick: " + audioId);
+                stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        if (mPlay) {
+
+//                    Picasso.get().load(R.drawable.stop).fit().into(play);
+                            play.setImageResource(R.drawable.stop);
+                            startPlaying(itemView.getContext(), uri);
+                            changeSeekBar();
+                            //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+                        } else {
+                            play.setImageResource(R.drawable.play_button);
+                            stopPlaying();
+
+                        }
+                        mPlay = !mPlay;
+                    }
+                });
             }
         });
     }
@@ -69,8 +94,16 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(context, audio);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    durationSb.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
+                    changeSeekBar();
+                }
+            });
+            mediaPlayer.prepareAsync();
+
             Log.d("VIEW HOLDER", String.valueOf(mediaPlayer.isPlaying()));
         } catch (IOException e) {
             Log.e("VIEW HOLDER", "prepare() failed");
@@ -80,5 +113,23 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private void stopPlaying() {
         mediaPlayer.release();
         mediaPlayer = null;
+    }
+
+    private void changeSeekBar(){
+        if(mediaPlayer != null) {
+            durationSb.setProgress(mediaPlayer.getCurrentPosition());
+
+            if (mediaPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                if (runnable != null) {
+                    handler.postDelayed(runnable, 1000);
+                }
+            }
+        }
     }
 }

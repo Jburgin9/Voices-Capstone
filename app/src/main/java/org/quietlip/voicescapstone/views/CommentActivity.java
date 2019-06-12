@@ -171,13 +171,13 @@ public class CommentActivity extends BaseActivity {
                             DocumentSnapshot document = task.getResult();
                             HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
 
-                            final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
-                            AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
+                                final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
+                                AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
 
 
-                            parentUsername.setText(user.getUserName());
-                            parentTitle.setText((audio.getTitle()));
-                            Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
+                                parentUsername.setText(user.getUserName());
+                                parentTitle.setText((audio.getTitle()));
+                                Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
 
                             parentPlay.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -194,8 +194,9 @@ public class CommentActivity extends BaseActivity {
                             });
                         }
 
-                    }
-                });
+                        }
+                    });
+        }
 
     }
 
