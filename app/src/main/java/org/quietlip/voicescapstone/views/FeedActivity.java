@@ -37,6 +37,8 @@ import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
@@ -50,7 +52,7 @@ public class FeedActivity extends BaseActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    List feedAudioList = new ArrayList<>();
+    List<AudioModel> feedAudioList = new ArrayList<>();
 
     private BottomNavigationView navigation;
 
@@ -77,32 +79,45 @@ public class FeedActivity extends BaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 final String id = (String) document.get("userId");
                                 final UserModel user = new UserModel(document.get("userName").toString(), document.get("userId").toString(),
                                         document.get("imageUrl").toString(), document.get("aboutMe").toString());
+
                                 db.collection("users").document(id).collection("audio")
                                         .get()
                                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 if (task.isSuccessful()) {
+
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user,document.getId()));
+//                                                        HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+//                                                        feedAudioList = new ArrayList<>();
+//                                                        List<DocumentSnapshot> myList = task.getResult().getDocuments();
+//                                                        for (int i = 0; i < myList.size(); i++) {
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(),document.getId()));
+
+
+
+                                                    }
+                                                    Collections.sort(feedAudioList);
+                                                    for (int i = 0; i < feedAudioList.size(); i++) {
+                                                        AudioModel audioModel = feedAudioList.get(i);
+                                                        Log.e("Testing", feedAudioList.get(i).getAudioId());
 
                                                     }
                                                     feedAdapter = new FeedAdapter(feedAudioList);
                                                     recyclerView.setAdapter(feedAdapter);
-
-
                                                 } else {
                                                     Log.d("help", "Error getting documents: ", task.getException());
+
                                                 }
                                             }
                                         });
                             }
-
 
                         } else {
                             Log.d("help", "Error getting documents: ", task.getException());

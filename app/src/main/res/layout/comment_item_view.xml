@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:background="@color/colorPrimary"
-        android:padding="10dp"
         android:elevation="4dp"
+        android:padding="10dp"
         app:cardCornerRadius="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,8 +34,11 @@
                 android:src="@drawable/linda"
                 app:civ_border_color="@color/colorAccent"
                 app:civ_border_width="1dp"
+                app:layout_constraintRight_toLeftOf="@+id/comment_play"
+                app:layout_constraintBottom_toTopOf="@id/comment_username"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/comment_username"
@@ -46,6 +49,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="username"
+                android:gravity="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="17sp"
                 android:textStyle="bold"
@@ -81,18 +85,18 @@
                 android:src="@drawable/play_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/comment_seekbar"
-                app:layout_constraintHorizontal_bias="0.981"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/comment_image"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.389" />
+                app:layout_constraintVertical_bias="0.421" />
 
             <SeekBar
                 android:id="@+id/comment_seekbar"
                 android:layout_width="200dp"
                 android:layout_height="25dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="44dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="40dp"
                 android:layout_toRightOf="@+id/comment_play"
                 android:background="@drawable/accent_border"
                 android:src="@drawable/soundwave"
@@ -105,15 +109,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="80dp"
                 android:text="@string/title"
                 android:textColor="@color/colorAccent"
                 android:textSize="17sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/comment_seekbar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.782"
+                app:layout_constraintHorizontal_bias="0.946"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>

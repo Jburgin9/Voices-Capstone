@@ -62,6 +62,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
     private String userid;
     private String audioId;
+    private String pathId;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -75,28 +76,10 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(final AudioModel audio) {
-        durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
-                    mediaPlayer.seekTo(progress);
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
+        duratonSeek();
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
-
-
+        pathId = audio.getPathId();
 
         UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         if(user1 != null) {
@@ -105,6 +88,10 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             username.setText(currentUserName);
             Log.e("currentUser", currentUserName);
             Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
+
+
+
+
         }
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +134,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         try {
             mediaPlayer.setDataSource(context, audio);
            // mediaPlayer.prepare();
-
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -172,12 +158,13 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
         commentActivityIntent.putExtra("userid", userid);
         commentActivityIntent.putExtra("audioid",audioId);
+        commentActivityIntent.putExtra("pathid",pathId);
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
 
-    private void changeSeekBar(){
-        if(mediaPlayer != null) {
+    private void changeSeekBar() {
+        if (mediaPlayer != null) {
             durationSb.setProgress(mediaPlayer.getCurrentPosition());
             if (mediaPlayer.isPlaying()) {
                 runnable = new Runnable() {
@@ -189,6 +176,25 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                 handler.postDelayed(runnable, 1000);
             }
         }
+    }
+        private void duratonSeek(){
+        durationSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+                mediaPlayer.seekTo(progress);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 }
 

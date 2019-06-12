@@ -54,17 +54,12 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(profilePic);
-        profilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
-//                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                    play.setImageResource(R.drawable.stop);
+                    play.setImageResource(R.drawable.ic_stopp);
                     startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                 } else {
                     play.setImageResource(R.drawable.play_button);
@@ -80,6 +75,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
     private void startPlaying(Context context, Uri audio) {
         mediaPlayer = new MediaPlayer();
         try {
@@ -103,4 +99,8 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
         itemView.getContext().startActivity(commentActivityIntent);
 
     }
-}
+}//    profilePic.setOnClickListener(new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//        }
+//    });

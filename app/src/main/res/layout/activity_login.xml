@@ -84,6 +84,7 @@
         android:elevation="10dp"
         android:outlineAmbientShadowColor="@color/colorAccent"
         android:text="@string/login"
+        android:gravity="center"
         android:backgroundTint="@color/colorPrimaryDark"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"

@@ -1,4 +1,5 @@
 package org.quietlip.voicescapstone.views;
+
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,40 +24,54 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ProfileActivity extends BaseActivity {
-    private ImageButton play;
-    private ImageView mic;
-    private boolean mPlay = true;
-    private TextView title;
-    private MediaPlayer player;
+
+
     private CircleImageView profile_pic;
     private TextView aboutME;
     private TextView userName;
+    private ImageButton play;
+    private TextView title;
+    private ImageView mic;
+
+    private MediaPlayer player;
+    private boolean mPlay = true;
+
     private VoicesAdapter voicesAdapter;
     private RecyclerView recyclerView;
     private BottomNavigationView navigation;
+
     private static String audioFile;
     private static final String DOC_PHOTO = "Photos";
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
     StorageReference storage = FirebaseStorage.getInstance().getReference(currentUserUID).child(DOC_PHOTO);
+
     private List<AudioModel> audioList;
     private UserModel userInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_recycler);
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
+
         profile_pic = findViewById(R.id.profile_image);
         aboutME = findViewById(R.id.about_me);
         userName = findViewById(R.id.user_name);
@@ -64,9 +80,11 @@ public class ProfileActivity extends BaseActivity {
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
         audioFile = getExternalCacheDir().getAbsolutePath();
+
         retrieveUserInfo();
         getListfromdb();
     }
+
     private void retrieveUserInfo() {
         db.collection("users").document(currentUserUID)
                 .get()
@@ -86,10 +104,8 @@ public class ProfileActivity extends BaseActivity {
                     }
                 });
     }
-    @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-        return super.onCreateView(parent, name, context, attrs);
-    }
+
+
     private void getListfromdb() {
         db.collection("users").document(currentUserUID).collection("audio")
                 .get()
@@ -98,10 +114,15 @@ public class ProfileActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser(), document.getId()));
+                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),CurrentUserManager.getInstance().getCurrentUser(),document.get("audioId").toString(), document.getId()));
                             }
                         } else {
                             Log.d("help", "Error getting documents: ", task.getException());
+                            Collections.sort(audioList);
+                            for (int i = 0; i < audioList.size(); i++) {
+                                AudioModel audioModel = audioList.get(i);
+                                Log.e("Testing", audioList.get(i).getAudioId());
+                            }
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
@@ -109,6 +130,7 @@ public class ProfileActivity extends BaseActivity {
                     }
                 });
     }
+
     public void startPlay() {
         player = new MediaPlayer();
         play.setOnClickListener(new View.OnClickListener() {
@@ -125,17 +147,18 @@ public class ProfileActivity extends BaseActivity {
                     mPlay = !mPlay;
                 }
 
-        try {
-                player.setDataSource(audioFile);
-                player.prepare();
-                player.start();
-            } catch (IOException e) {
+                try {
+                    player.setDataSource(audioFile);
+                    player.prepare();
+                    player.start();
+                } catch (IOException e) {
+                }
             }
-        }
-        private void stopPlaying() {
-            player.release();
-            player = null;
-        }
-});
+
+            private void stopPlaying() {
+                player.release();
+                player = null;
+            }
+        });
     }
 }

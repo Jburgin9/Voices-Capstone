@@ -231,14 +231,14 @@ public class RecordActivity extends BaseActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),newAudioModelId);
-                db.collection(users).document(currentUserUID).collection("audio")
-                        .add(audioModel)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),newAudioModelId,"");
+                db.collection(users).document(currentUserUID).collection("audio").document(newAudioModelId)
+                        .set(audioModel)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
+                            public void onSuccess(Void aVoid) {
                                 goToProfile();
-                                Log.d("test", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                Log.d("test", "DocumentSnapshot added with ID: " + newAudioModelId);
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
