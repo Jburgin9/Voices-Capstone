@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -64,6 +65,8 @@ import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static java.security.AccessController.getContext;
+
 public class CommentActivity extends BaseActivity {
 
     String users = "users";
@@ -106,6 +109,10 @@ public class CommentActivity extends BaseActivity {
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
     private final String TAG = "CURRENTTIME";
     private final String TAG2 = "TIME";
+    private StorageReference stRef;
+    private Handler handler;
+    private Runnable runnable;
+
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
@@ -125,7 +132,7 @@ public class CommentActivity extends BaseActivity {
         currentAudioId = getIntent().getStringExtra("audioid");
         pathId = getIntent().getStringExtra("pathid");
 
-
+        handler = new Handler();
         record = findViewById(R.id.record_button_comment);
         play = findViewById(R.id.play_button_comment);
         post = findViewById(R.id.post_button_comment);
@@ -147,9 +154,10 @@ public class CommentActivity extends BaseActivity {
         askPermission();
         retrieveParentAudio();
         setRecordAudioOnClick();
-        setPlayAudioBackOnClick();
+        //setPlayAudioBackOnClick();
         setPostAudioOnClick();
         retrieveComments();
+        duratonSeek();
 
 //        Date date = new Date(System.currentTimeMillis());
 //        String pattern = "EEE, d MMM yyyy HH:mm:ss Z";
@@ -163,50 +171,64 @@ public class CommentActivity extends BaseActivity {
 
     private void retrieveParentAudio() {
         Log.d(TAG, "retrieveParentAudio: " + currentAudioId);
-        db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+        if(userId != null && currentAudioId != null ){
+            db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
 
                                 final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
-                                AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
+                                final AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
 
 
                                 parentUsername.setText(user.getUserName());
                                 parentTitle.setText((audio.getTitle()));
                                 Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
+                                audioId = audio.getAudioId();
 
-                            parentPlay.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (pPlay) {
-                                        parentPlay.setImageResource(R.drawable.ic_stopp);
-                                        startPlaying();
-                                    } else {
-                                        parentPlay.setImageResource(R.drawable.play_button);
-                                        stopPlaying();
+                                parentPlay.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        stRef = FirebaseStorage.getInstance().getReference(user.getUserId()).child("audio").child(audioId);
+                                        Log.d(TAG, "onClick: " + audioId);
+                                        stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                if (mPlay) {
+
+//                    Picasso.get().load(R.drawable.stop).fit().into(play);
+                                                    play.setImageResource(R.drawable.ic_stopp);
+                                                    startPlaying(uri);
+                                                    changeSeekBar();
+                                                    //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+                                                } else {
+                                                    play.setImageResource(R.drawable.play_button);
+                                                    stopPlaying();
+
+                                                }
+                                                mPlay = !mPlay;
+                                            }
+                                        });
                                     }
-                                    pPlay = !pPlay;
-                                }
-                            });
-                        }
+                                });
+                            }
 
                         }
                     });
         }
+        }
 
-    }
 
     private void setPlayAudioBackOnClick() {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPlay) {
-                    play.setImageResource(R.drawable.stop);
-                    startPlaying();
+                    play.setImageResource(R.drawable.ic_stopp);
+//                    startPlaying();
                 } else {
                     play.setImageResource(R.drawable.play_button);
                     stopPlaying();
@@ -349,14 +371,16 @@ public class CommentActivity extends BaseActivity {
             finish();
     }
 
-    private void startPlaying() {
+    private void startPlaying(Uri uri) {
         player = new MediaPlayer();
         try {
-            player.setDataSource(audioFile);
+            player.setDataSource(uri.toString());
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    parentSeekBar.setMax(player.getDuration());
                     player.start();
+                    changeSeekBar();
                 }
             });
             player.prepareAsync();
@@ -393,5 +417,55 @@ public class CommentActivity extends BaseActivity {
         } catch (RuntimeException stopException) {
             Log.e("stoprecord", "failed");
         }
+    }
+    private void startPlayingParent() {
+        player = new MediaPlayer();
+        try {
+            player.setDataSource(audioFile);
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    player.start();
+                }
+            });
+            player.prepareAsync();
+        } catch (IOException e) {
+            Log.e("play", "prepare() failed");
+        }
+    }
+
+    private void changeSeekBar() {
+        if (player != null) {
+            parentSeekBar.setProgress(player.getCurrentPosition());
+            if (player.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
+    }
+
+    private void duratonSeek(){
+        parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+                player.seekTo(progress);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 }

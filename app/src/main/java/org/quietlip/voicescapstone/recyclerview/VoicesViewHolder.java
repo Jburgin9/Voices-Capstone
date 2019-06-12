@@ -115,7 +115,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                         if (mPlay) {
 
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                            play.setImageResource(R.drawable.stop);
+                            play.setImageResource(R.drawable.ic_stopp);
                             startPlaying(itemView.getContext(), uri);
                             changeSeekBar();
                             //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
