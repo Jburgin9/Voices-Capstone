@@ -2,21 +2,30 @@ package org.quietlip.voicescapstone.models;
 
 import java.util.Comparator;
 
-public class AudioModel implements Comparator<AudioModel>,Comparable<AudioModel> {
+public class AudioModel implements Comparator<AudioModel>, Comparable<AudioModel> {
     private String uri;
     private String title;
     private String audioId;
+    private String pathId;
 
 
     private UserModel user;
 
 
-    public AudioModel(String uri, String audioTitle, UserModel user, String audioId) {
+    public AudioModel(String uri, String audioTitle, UserModel user, String audioId, String pathId) {
         this.uri = uri;
         this.title = audioTitle;
         this.user = user;
         this.audioId = audioId;
+        this.pathId = pathId;
+    }
 
+    public String getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(String pathId) {
+        this.pathId = pathId;
     }
 
     public String getUri() {

@@ -33,6 +33,7 @@ import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -113,10 +114,15 @@ public class ProfileActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), CurrentUserManager.getInstance().getCurrentUser(), document.getId()));
+                                audioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(),CurrentUserManager.getInstance().getCurrentUser(),document.get("audioId").toString(), document.getId()));
                             }
                         } else {
                             Log.d("help", "Error getting documents: ", task.getException());
+                            Collections.sort(audioList);
+                            for (int i = 0; i < audioList.size(); i++) {
+                                AudioModel audioModel = audioList.get(i);
+                                Log.e("Testing", audioList.get(i).getAudioId());
+                            }
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);

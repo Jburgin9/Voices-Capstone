@@ -62,6 +62,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
     private String userid;
     private String audioId;
+    private String pathId;
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -78,6 +79,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         duratonSeek();
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
+        pathId = audio.getPathId();
 
         UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         if(user1 != null) {
@@ -156,6 +158,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         Intent commentActivityIntent = new Intent(itemView.getContext(), CommentActivity.class);
         commentActivityIntent.putExtra("userid", userid);
         commentActivityIntent.putExtra("audioid",audioId);
+        commentActivityIntent.putExtra("pathid",pathId);
         itemView.getContext().startActivity(commentActivityIntent);
 
     }

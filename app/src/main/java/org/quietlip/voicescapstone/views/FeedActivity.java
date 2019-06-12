@@ -98,7 +98,7 @@ public class FeedActivity extends BaseActivity {
 //                                                        feedAudioList = new ArrayList<>();
 //                                                        List<DocumentSnapshot> myList = task.getResult().getDocuments();
 //                                                        for (int i = 0; i < myList.size(); i++) {
-                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString()));
+                                                        feedAudioList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(),document.getId()));
 
 
 

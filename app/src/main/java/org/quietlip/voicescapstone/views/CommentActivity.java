@@ -95,6 +95,7 @@ public class CommentActivity extends BaseActivity {
     private boolean mPlay = true;
     private boolean mRecord = true;
 
+    String pathId;
     String userId;
     String currentAudioId;
     String audioId;
@@ -122,6 +123,8 @@ public class CommentActivity extends BaseActivity {
 
         userId = getIntent().getStringExtra("userid");
         currentAudioId = getIntent().getStringExtra("audioid");
+        pathId = getIntent().getStringExtra("pathid");
+
 
         record = findViewById(R.id.record_button_comment);
         play = findViewById(R.id.play_button_comment);
@@ -159,6 +162,7 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void retrieveParentAudio() {
+        Log.d(TAG, "retrieveParentAudio: " + currentAudioId);
         db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -166,9 +170,9 @@ public class CommentActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-                            final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
-                                    usermap.get("imageUrl"), usermap.get("aboutMe"));
-                            AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
+
+                            final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
+                            AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
 
 
                             parentUsername.setText(user.getUserName());
@@ -258,7 +262,7 @@ public class CommentActivity extends BaseActivity {
                                     final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
                                             usermap.get("imageUrl"), usermap.get("aboutMe"));
                                     myList.get(i).get("uri").toString();
-                                    commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).getId()));
+                                    commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                 }
 
 //                                for (DocumentSnapshot document : task.getResult()) {
@@ -302,7 +306,7 @@ public class CommentActivity extends BaseActivity {
         filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser(), audioId);
+                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser(), audioId, "");
                 db.collection(users).document(userId).collection("audio").document(currentAudioId).collection("commentlist")
                         .document(audioId)
 
