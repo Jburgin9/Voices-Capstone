@@ -183,7 +183,7 @@ public class CommentActivity extends BaseActivity {
                                 @Override
                                 public void onClick(View v) {
                                     if (pPlay) {
-                                        parentPlay.setImageResource(R.drawable.stop);
+                                        parentPlay.setImageResource(R.drawable.ic_stopp);
                                         startPlaying();
                                     } else {
                                         parentPlay.setImageResource(R.drawable.play_button);
