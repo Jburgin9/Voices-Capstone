@@ -84,6 +84,7 @@ public class CommentActivity extends BaseActivity {
     private ImageView play;
     private Button post;
     private EditText titleInput;
+    private SeekBar recordSeekbar;
 
     private RecyclerView recyclerView;
     private CommentAdapter commentAdapter;
@@ -154,7 +155,7 @@ public class CommentActivity extends BaseActivity {
         askPermission();
         retrieveParentAudio();
         setRecordAudioOnClick();
-        //setPlayAudioBackOnClick();
+        setPlayAudioBackOnClick();
         setPostAudioOnClick();
         retrieveComments();
         duratonSeek();
@@ -201,7 +202,7 @@ public class CommentActivity extends BaseActivity {
 
 //                    Picasso.get().load(R.drawable.stop).fit().into(play);
                                                     play.setImageResource(R.drawable.ic_stopp);
-                                                    startPlaying(uri);
+                                                    startPlayingParent(uri);
                                                     changeSeekBar();
                                                     //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
                                                 } else {
@@ -228,7 +229,7 @@ public class CommentActivity extends BaseActivity {
             public void onClick(View v) {
                 if (mPlay) {
                     play.setImageResource(R.drawable.ic_stopp);
-//                    startPlaying();
+                    startPlayingRecord();
                 } else {
                     play.setImageResource(R.drawable.play_button);
                     stopPlaying();
@@ -371,7 +372,7 @@ public class CommentActivity extends BaseActivity {
             finish();
     }
 
-    private void startPlaying(Uri uri) {
+    private void startPlayingParent(Uri uri) {
         player = new MediaPlayer();
         try {
             player.setDataSource(uri.toString());
@@ -418,7 +419,7 @@ public class CommentActivity extends BaseActivity {
             Log.e("stoprecord", "failed");
         }
     }
-    private void startPlayingParent() {
+    private void startPlayingRecord() {
         player = new MediaPlayer();
         try {
             player.setDataSource(audioFile);
@@ -426,6 +427,7 @@ public class CommentActivity extends BaseActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     player.start();
+                    changeSeekBar();
                 }
             });
             player.prepareAsync();
@@ -467,5 +469,25 @@ public class CommentActivity extends BaseActivity {
 
             }
         });
-    }
-}
+
+
+//        private void duratonSeekRecord(){
+//            parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//                @Override
+//                public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+//                    player.seekTo(progress);
+//
+//                }
+//
+//                @Override
+//                public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//                }
+//
+//                @Override
+//                public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//                }
+//            });
+//    }
+}}
