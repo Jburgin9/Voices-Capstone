@@ -108,8 +108,7 @@ public class CommentActivity extends BaseActivity {
     FirebaseStorage storage = FirebaseStorage.getInstance("gs://voicescapstone.appspot.com");
     private StorageReference mStorageRef = storage.getReference();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
-    private final String TAG = "CURRENTTIME";
-    private final String TAG2 = "TIME";
+    private final String TAG = "VOICES";
     private StorageReference stRef;
     private Handler handler;
     private Runnable runnable;
@@ -147,6 +146,7 @@ public class CommentActivity extends BaseActivity {
         parentPlay = findViewById(R.id.parent_comment_play);
         parentSeekBar = findViewById(R.id.parent_comment_seekbar);
         parentTitle = findViewById(R.id.parent_comment_title);
+        recordSeekbar = findViewById(R.id.progress_bar_comment);
 
         audioFile = getExternalCacheDir().getAbsolutePath();
         audioFile += System.currentTimeMillis() + "_recorded_audio.3pg";
@@ -159,6 +159,7 @@ public class CommentActivity extends BaseActivity {
         setPostAudioOnClick();
         retrieveComments();
         duratonSeek();
+        duratonRecordSeek();
 
 //        Date date = new Date(System.currentTimeMillis());
 //        String pattern = "EEE, d MMM yyyy HH:mm:ss Z";
@@ -172,17 +173,24 @@ public class CommentActivity extends BaseActivity {
 
     private void retrieveParentAudio() {
         Log.d(TAG, "retrieveParentAudio: " + currentAudioId);
-        if(userId != null && currentAudioId != null ){
+        if (userId != null && currentAudioId != null) {
             db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
-                                HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
+                                HashMap<String, String> usermap =
+                                        (HashMap<String, String>) document.get("user");
 
-                                final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
-                                final AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
+                                final UserModel user = new UserModel(usermap.get("userName"),
+                                        usermap.get("userId"), usermap.get("imageUrl"),
+                                        usermap.get("aboutMe"));
+                                final AudioModel audio =
+                                        (new AudioModel(document.get("uri").toString(),
+                                                document.get("title").toString(), user,
+                                                document.get("audioId").toString(),
+                                                document.getId()));
 
 
                                 parentUsername.setText(user.getUserName());
@@ -204,7 +212,8 @@ public class CommentActivity extends BaseActivity {
                                                     play.setImageResource(R.drawable.ic_stopp);
                                                     startPlayingParent(uri);
                                                     changeSeekBar();
-                                                    //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+                                                    //startPlaying(itemView.getContext(), Uri
+                                                    // .parse(audio.getUri()));
                                                 } else {
                                                     play.setImageResource(R.drawable.play_button);
                                                     stopPlaying();
@@ -220,7 +229,7 @@ public class CommentActivity extends BaseActivity {
                         }
                     });
         }
-        }
+    }
 
 
     private void setPlayAudioBackOnClick() {
@@ -249,9 +258,11 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void askPermission() {
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(commentActivity, new String[]{Manifest.permission.RECORD_AUDIO}, 2);
+            ActivityCompat.requestPermissions(commentActivity,
+                    new String[]{Manifest.permission.RECORD_AUDIO}, 2);
         }
     }
 
@@ -282,19 +293,26 @@ public class CommentActivity extends BaseActivity {
                                 List<DocumentSnapshot> myList = task.getResult().getDocuments();
                                 for (int i = 0; i < myList.size(); i++) {
 
-                                    HashMap<String, String> usermap = (HashMap<String, String>) myList.get(i).get("user");
-                                    final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
+                                    HashMap<String, String> usermap =
+                                            (HashMap<String, String>) myList.get(i).get("user");
+                                    final UserModel user = new UserModel(usermap.get("userName"),
+                                            usermap.get("userId"),
                                             usermap.get("imageUrl"), usermap.get("aboutMe"));
                                     myList.get(i).get("uri").toString();
                                     commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                 }
 
 //                                for (DocumentSnapshot document : task.getResult()) {
-//                                    Log.d(CommentActivity.class.getName(), "onComplete: " + document);
-//                                    HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-//                                    final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
+//                                    Log.d(CommentActivity.class.getName(), "onComplete: " +
+//                                    document);
+//                                    HashMap<String, String> usermap = (HashMap<String, String>)
+//                                    document.get("user");
+//                                    final UserModel user = new UserModel(usermap.get
+//                                    ("userName"), usermap.get("userId"),
 //                                            usermap.get("imageUrl"), usermap.get("aboutMe"));
-//                                    commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
+//                                    commentList.add(new AudioModel(document.get("uri").toString
+//                                    (), document.get("title").toString(), user, document.getId
+//                                    ()));
 //                                }
 //                                Collections.sort(commentList,new MySort());
                                 for (int i = 0; i < commentList.size(); i++) {
@@ -318,7 +336,8 @@ public class CommentActivity extends BaseActivity {
         progressDialog.setMessage("Uploading Audio...");
         progressDialog.show();
         audioId = String.valueOf(System.currentTimeMillis());
-        StorageReference filePath = mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(audioId));
+        StorageReference filePath =
+                mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(audioId));
         final Uri uri = Uri.fromFile(new File(audioFile));
         filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -330,7 +349,9 @@ public class CommentActivity extends BaseActivity {
         filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getCurrentUser(), audioId, "");
+                AudioModel audioModel = new AudioModel(uri.toString(),
+                        titleInput.getText().toString(), CurrentUserManager.getCurrentUser(),
+                        audioId, "");
                 db.collection(users).document(userId).collection("audio").document(currentAudioId).collection("commentlist")
                         .document(audioId)
 
@@ -419,15 +440,18 @@ public class CommentActivity extends BaseActivity {
             Log.e("stoprecord", "failed");
         }
     }
+
     private void startPlayingRecord() {
         player = new MediaPlayer();
         try {
             player.setDataSource(audioFile);
+            Log.d(TAG, "startPlayingRecord: " + audioFile);
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    recordSeekbar.setMax(player.getDuration());
                     player.start();
-                    changeSeekBar();
+                    changeRecordSeekBar();
                 }
             });
             player.prepareAsync();
@@ -451,10 +475,25 @@ public class CommentActivity extends BaseActivity {
         }
     }
 
-    private void duratonSeek(){
+    private void changeRecordSeekBar() {
+        if (player != null) {
+            recordSeekbar.setProgress(player.getCurrentPosition());
+            if (player.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeRecordSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
+    }
+
+    private void duratonSeek() {
         parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 player.seekTo(progress);
 
             }
@@ -469,25 +508,25 @@ public class CommentActivity extends BaseActivity {
 
             }
         });
+  }
 
+    private void duratonRecordSeek() {
+        recordSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                player.seekTo(progress);
 
-//        private void duratonSeekRecord(){
-//            parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//                @Override
-//                public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
-//                    player.seekTo(progress);
-//
-//                }
-//
-//                @Override
-//                public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//
-//                @Override
-//                public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//            });
-//    }
-}}
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+}
