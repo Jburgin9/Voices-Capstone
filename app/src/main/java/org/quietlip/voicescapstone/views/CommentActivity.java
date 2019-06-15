@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,9 +93,12 @@ public class CommentActivity extends BaseActivity {
 
     private ImageView parentImage;
     private TextView parentUsername;
-    private ImageButton parentPlay;
+    private ImageView parentPlay;
     private SeekBar parentSeekBar;
     private TextView parentTitle;
+    private TextView parentTime;
+    private MediaPlayer parentPlayer;
+    private ImageView color;
     private boolean pPlay = true;
 
     private boolean mPlay = true;
@@ -134,6 +138,7 @@ public class CommentActivity extends BaseActivity {
         currentAudioId = getIntent().getStringExtra("audioid");
         pathId = getIntent().getStringExtra("pathid");
 
+        recordSeekbar = findViewById(R.id.comment_record_seek);
         handler = new Handler();
         record = findViewById(R.id.record_button_comment);
         play = findViewById(R.id.play_button_comment);
@@ -148,6 +153,8 @@ public class CommentActivity extends BaseActivity {
         parentPlay = findViewById(R.id.parent_comment_play);
         parentSeekBar = findViewById(R.id.parent_comment_seekbar);
         parentTitle = findViewById(R.id.parent_comment_title);
+        parentTime = findViewById(R.id.parent_time_stamp);
+        color = findViewById(R.id.color);
 
         audioFile = getExternalCacheDir().getAbsolutePath();
         audioFile += System.currentTimeMillis() + "_recorded_audio.3pg";
@@ -160,6 +167,7 @@ public class CommentActivity extends BaseActivity {
         setPostAudioOnClick();
         retrieveComments();
         duratonSeek();
+        duratonSeekRecord();
 
 //        Date date = new Date(System.currentTimeMillis());
 //        String pattern = "EEE, d MMM yyyy HH:mm:ss Z";
@@ -173,7 +181,7 @@ public class CommentActivity extends BaseActivity {
 
     private void retrieveParentAudio() {
         Log.d(TAG, "retrieveParentAudio: " + currentAudioId);
-        if(userId != null && currentAudioId != null ){
+        if (userId != null && currentAudioId != null) {
             db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -185,11 +193,19 @@ public class CommentActivity extends BaseActivity {
                                 final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"), usermap.get("imageUrl"), usermap.get("aboutMe"));
                                 final AudioModel audio = (new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.get("audioId").toString(), document.getId()));
 
-
+                                user.getUserId();
+                                getColor();
                                 parentUsername.setText(user.getUserName());
                                 parentTitle.setText((audio.getTitle()));
                                 Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
                                 audioId = audio.getAudioId();
+
+                                long time = Long.parseLong(audioId);
+                                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTimeInMillis(time);
+                                parentTime.setText(formatter.format(calendar.getTime()));
+
 
                                 parentPlay.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -201,14 +217,14 @@ public class CommentActivity extends BaseActivity {
                                             public void onSuccess(Uri uri) {
                                                 if (mPlay) {
 
-//                    Picasso.get().load(R.drawable.stop).fit().into(play);
-                                                    play.setImageResource(R.drawable.ic_stopp);
+//
+                                                    parentPlay.setImageResource(R.drawable.ic_stopp);
                                                     startPlayingParent(uri);
                                                     changeSeekBar();
-                                                    //startPlaying(itemView.getContext(), Uri.parse(audio.getUri()));
+
                                                 } else {
-                                                    play.setImageResource(R.drawable.play_button);
-                                                    stopPlaying();
+                                                    parentPlay.setImageResource(R.drawable.play_button);
+                                                    stopparentPlaying();
 
                                                 }
                                                 mPlay = !mPlay;
@@ -221,7 +237,27 @@ public class CommentActivity extends BaseActivity {
                         }
                     });
         }
+    }
+
+    private void getColor() {
+        switch (userId) {
+            case "Y0VTyMlb5rfjSnA9zic3QMIJ43y1":
+                color.setBackground(this.getApplicationContext().getResources().getDrawable(R.drawable.purple));
+                /*Picasso.get().load(R.drawable.purple).fit().into(color);*/
+
+
+                break;
+            case "mPm3onnfwCXlAoNgyj5i5tcHeND3":
+                color.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.pink));
+//                Picasso.get().load(R.drawable.pink).fit().into(color);
+                break;
+
+            case "yUr700mkPmUAPvrdp1Z4BuVT9GO2":
+                color.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.green));
+//                Picasso.get().load(R.drawable.green).fit().into(color);
+                break;
         }
+    }
 
 
     private void setPlayAudioBackOnClick() {
@@ -262,7 +298,7 @@ public class CommentActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (mRecord) {
-                    record.setImageResource(R.drawable.recordon3);
+                    record.setImageResource(R.drawable.aquamic);
                     startRecording();
                 } else {
                     record.setImageResource(R.drawable.recordoff2);
@@ -291,14 +327,7 @@ public class CommentActivity extends BaseActivity {
                                     commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                 }
 
-//                                for (DocumentSnapshot document : task.getResult()) {
-//                                    Log.d(CommentActivity.class.getName(), "onComplete: " + document);
-//                                    HashMap<String, String> usermap = (HashMap<String, String>) document.get("user");
-//                                    final UserModel user = new UserModel(usermap.get("userName"), usermap.get("userId"),
-//                                            usermap.get("imageUrl"), usermap.get("aboutMe"));
-//                                    commentList.add(new AudioModel(document.get("uri").toString(), document.get("title").toString(), user, document.getId()));
-//                                }
-//                                Collections.sort(commentList,new MySort());
+
                                 for (int i = 0; i < commentList.size(); i++) {
                                     Log.e("Testing", commentList.get(i).getAudioId());
                                 }
@@ -375,18 +404,18 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void startPlayingParent(Uri uri) {
-        player = new MediaPlayer();
+        parentPlayer = new MediaPlayer();
         try {
-            player.setDataSource(uri.toString());
-            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            parentPlayer.setDataSource(uri.toString());
+            parentPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    parentSeekBar.setMax(player.getDuration());
-                    player.start();
+                    parentSeekBar.setMax(parentPlayer.getDuration());
+                    parentPlayer.start();
                     changeSeekBar();
                 }
             });
-            player.prepareAsync();
+            parentPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e("play", "prepare() failed");
         }
@@ -395,6 +424,11 @@ public class CommentActivity extends BaseActivity {
     private void stopPlaying() {
         player.release();
         player = null;
+    }
+
+    private void stopparentPlaying() {
+        parentPlayer.release();
+        parentPlayer = null;
     }
 
     private void startRecording() {
@@ -421,6 +455,7 @@ public class CommentActivity extends BaseActivity {
             Log.e("stoprecord", "failed");
         }
     }
+
     private void startPlayingRecord() {
         player = new MediaPlayer();
         try {
@@ -429,7 +464,7 @@ public class CommentActivity extends BaseActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     player.start();
-                    changeSeekBar();
+                    changeRecordSeekBar();
                 }
             });
             player.prepareAsync();
@@ -439,8 +474,43 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void changeSeekBar() {
+        if (parentPlayer != null) {
+            parentSeekBar.setProgress(parentPlayer.getCurrentPosition());
+            if (parentPlayer.isPlaying()) {
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        changeSeekBar();
+                    }
+                };
+                handler.postDelayed(runnable, 1000);
+            }
+        }
+    }
+
+    private void duratonSeek() {
+        parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                parentPlayer.seekTo(progress);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    private void changeRecordSeekBar() {
         if (player != null) {
-            parentSeekBar.setProgress(player.getCurrentPosition());
+            recordSeekbar.setProgress(player.getCurrentPosition());
             if (player.isPlaying()) {
                 runnable = new Runnable() {
                     @Override
@@ -453,10 +523,10 @@ public class CommentActivity extends BaseActivity {
         }
     }
 
-    private void duratonSeek(){
-        parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+    private void duratonSeekRecord() {
+        recordSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 player.seekTo(progress);
 
             }
@@ -471,25 +541,5 @@ public class CommentActivity extends BaseActivity {
 
             }
         });
-
-
-//        private void duratonSeekRecord(){
-//            parentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//                @Override
-//                public void onProgressChanged(SeekBar seekBar, int  progress, boolean fromUser) {
-//                    player.seekTo(progress);
-//
-//                }
-//
-//                @Override
-//                public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//
-//                @Override
-//                public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//            });
-//    }
-}}
+    }
+}

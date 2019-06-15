@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorAccent">#000000</color>
-    <color name="colorPrimaryDark">#BF7A0D</color>
+    <color name="colorPrimaryDark">#008175</color>
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorprogressBar">#BF7A0D</color>
+    <color name="gray">#7A7A7A</color>
+    <color name="colorprogressBar">#67CFB7</color>
 
 </resources>

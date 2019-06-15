@@ -12,10 +12,13 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
-    List<AudioModel> commentList;
 
-    public CommentAdapter(List<AudioModel> commentList) {
+    List<AudioModel> commentList;
+    AudioModel parentAudio;
+
+    public CommentAdapter(List<AudioModel> commentList ) {
         this.commentList = commentList;
+
     }
 
     @NonNull

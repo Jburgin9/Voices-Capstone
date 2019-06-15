@@ -17,19 +17,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="36dp" />
+        tools:layout_editor_absoluteY="56dp" />
 
     <ImageView
         android:id="@+id/logo_iv"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/logo"
+        android:layout_width="241dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="148dp"
+        android:src="@drawable/voiceslogo"
+        app:layout_constraintBottom_toTopOf="@id/username_et"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.457"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/username_et"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/username_et"
@@ -42,7 +41,7 @@
         android:background="@drawable/accent_border"
         android:drawableStart="@drawable/ic_user"
         android:gravity="center"
-        android:text="justin@gmail.com"
+        android:text="fribel@gmail.com"
         android:padding="10dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="20sp"
@@ -88,6 +87,7 @@
         android:backgroundTint="@color/colorPrimaryDark"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
+
         app:layout_constraintBottom_toTopOf="@id/sign_up_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -100,7 +100,7 @@
         android:id="@+id/sign_up_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="176dp"
         android:background="@drawable/accent_border"
         android:elevation="10dp"

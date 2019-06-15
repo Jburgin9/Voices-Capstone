@@ -11,6 +11,6 @@ class MySort implements Comparator<AudioModel> {
 
     @Override
     public int compare(AudioModel o1, AudioModel o2) {
-        return o1.getAudioId().compareTo(o2.getAudioId());
+        return o2.getAudioId().compareTo(o1.getAudioId());
     }
 }
