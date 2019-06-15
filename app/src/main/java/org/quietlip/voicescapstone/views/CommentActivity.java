@@ -18,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -244,6 +245,7 @@ public class CommentActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 uploadAudio();
+                titleInput.onEditorAction(EditorInfo.IME_ACTION_DONE);
             }
         });
     }
