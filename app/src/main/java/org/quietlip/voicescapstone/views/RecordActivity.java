@@ -191,7 +191,7 @@ public class RecordActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (mrecord) {
-                    record.setImageResource(R.drawable.recordon3);
+                    record.setImageResource(R.drawable.aquamic);
                     startRecording();
                 } else {
                     record.setImageResource(R.drawable.recordoff2);

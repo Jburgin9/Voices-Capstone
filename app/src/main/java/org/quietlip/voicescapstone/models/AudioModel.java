@@ -62,7 +62,7 @@ public class AudioModel implements Comparator<AudioModel>, Comparable<AudioModel
     }
 
     @Override
-    public int compare(AudioModel o1, AudioModel o2) {
+    public int compare(AudioModel o2, AudioModel o1) {
         return o2.audioId.compareTo(o1.audioId);
     }
 

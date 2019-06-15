@@ -9,6 +9,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,18 +24,26 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "PROUD";
-    private AppCompatImageButton play;
+    private ImageView play;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView title;
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
     private CircleImageView comment_pic;
     private TextView username;
+    private TextView timeStamp;
+    private ImageView color;
+
+
     AudioModel audioModel;
     private StorageReference stRef;
     private SeekBar durationSb;
@@ -50,6 +59,8 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         comment_pic = itemView.findViewById(R.id.comment_image);
         username = itemView.findViewById(R.id.comment_username);
         durationSb = itemView.findViewById(R.id.comment_seekbar);
+        timeStamp = itemView.findViewById(R.id.comment_time_stamp);
+        color = itemView.findViewById(R.id.color);
         handler = new Handler();
     }
 
@@ -57,7 +68,15 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
         audioModel = audio;
+
+        long time = Long.parseLong(audioId);
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        timeStamp.setText(formatter.format(calendar.getTime()));
+
         final UserModel user = audio.getUser();
+        getColor();
         String username1 = user.getUserName();
         username.setText(username1);
         Picasso.get().load(audio.getUser().getImageUrl()).fit().into(comment_pic);
@@ -132,4 +151,24 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
             }
         }
     }
+    private void getColor() {
+        switch (audioModel.getUser().getUserId()) {
+            case "Y0VTyMlb5rfjSnA9zic3QMIJ43y1":
+                color.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.purple));
+                /*Picasso.get().load(R.drawable.purple).fit().into(color);*/
+
+
+                break;
+            case "mPm3onnfwCXlAoNgyj5i5tcHeND3":
+                color.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.pink));
+//                Picasso.get().load(R.drawable.pink).fit().into(color);
+                break;
+
+            case "yUr700mkPmUAPvrdp1Z4BuVT9GO2":
+                color.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.green));
+//                Picasso.get().load(R.drawable.green).fit().into(color);
+                break;
+        }
+    }
 }
+

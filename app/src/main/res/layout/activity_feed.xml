@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".views.FeedActivity">
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/feed_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -44,7 +44,7 @@ public class ProfileActivity extends BaseActivity {
     private CircleImageView profile_pic;
     private TextView aboutME;
     private TextView userName;
-    private ImageButton play;
+    private ImageView play;
     private TextView title;
     private ImageView mic;
 
