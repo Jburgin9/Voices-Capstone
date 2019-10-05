@@ -45,6 +45,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                         Intent settingsIntent = new Intent(BaseActivity.this, ProfileActivity.class);
                         startActivity(settingsIntent);
                         break;
+
+                    case R.id.logout_tab:
+                        Intent logoutIntent = new Intent(BaseActivity.this, LoginActivity.class);
+                        startActivity(logoutIntent);
+                        break;
                 }
                 return true;
             }

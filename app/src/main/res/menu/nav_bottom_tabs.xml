@@ -15,4 +15,9 @@
         android:id="@+id/account_tab"
         android:icon="@drawable/ic_person_black_24dp"
         android:title="Account" />
+
+    <item
+        android:id="@+id/logout_tab"
+        android:icon="@drawable/ic_logout"
+        android:title="Logout" />
 </menu>
