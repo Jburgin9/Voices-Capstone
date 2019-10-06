@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,6 +34,7 @@ import com.squareup.picasso.Picasso;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
+import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 import java.io.File;
@@ -58,10 +60,10 @@ public class RegisterActivity extends AppCompatActivity {
     private UserModel user;
     private TextView uploadImageTv;
 
-     String email;
-     String password;
-     String username;
-     String aboutMe;
+    String email;
+    String password;
+    String username;
+    String aboutMe;
 
     private FirebaseFirestore firestore;
     private CircleImageView profileImage;
@@ -86,8 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
         createAccountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                helper.makeFirelog(RegisterActivity.this, "", "loading...");
                 registerUser();
-
             }
         });
 
@@ -126,20 +128,23 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerUser() {
         Log.d(TAG, "registerUser: ");
-         email = registerEmail.getText().toString();
-         password = registerPassword.getText().toString();
-         username = registerUsername.getText().toString();
-         aboutMe = regAboutMe.getText().toString();
-
+        email = registerEmail.getText().toString();
+        password = registerPassword.getText().toString();
+        username = registerUsername.getText().toString();
+        aboutMe = regAboutMe.getText().toString();
         if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(username)) {
-            helper.makeFirelog(this, "", "loading...");
             registerAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "onComplete: register ");
-
+                                //TODO: BELOW SEND TO PROFILE AFTER CREATION
+                                String uid = registerAuth.getUid();
+                                UserModel user = new UserModel(username, uid, imageUri.toString(), aboutMe);
+                                CurrentUserManager.createUser(user);
+                                CurrentUserManager.setUser(uid);
+                                startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
                                 helper.dismissFirelog();
                                 downLoadUri();
                             } else {
@@ -148,12 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 helper.makeSnackie(coord, task.getException().toString());
                             }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: register " + e.getMessage());
-                }
-            });
+                    });
         }
     }
 
@@ -181,7 +181,8 @@ public class RegisterActivity extends AppCompatActivity {
 //        if (imageUri != null) {
 //
 //
-//            storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask
+//            .TaskSnapshot>() {
 //                @Override
 //                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                    Log.d(TAG, "onSuccess: " + imageUri);
@@ -201,23 +202,25 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private void downLoadUri() {
-       storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
-        uploadTask = storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        storage = FirebaseStorage.getInstance().getReference(fireUser.getUid()).child(DOC_PHOTO);
+        uploadTask =
+                storage.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                 storage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         fireUIPath = uri.toString();
-                        
+
                         Log.d(TAG, "onSuccess: " + uri.toString());
-                        user = new UserModel(username, fireUser.getUid(),fireUIPath,aboutMe);
+                        user = new UserModel(username, fireUser.getUid(), fireUIPath, aboutMe);
 
                         firestore.collection("users").document(fireUser.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
 
-                                startActivity(new Intent(RegisterActivity.this, ProfileActivity.class));
+                                startActivity(new Intent(RegisterActivity.this,
+                                        ProfileActivity.class));
 
 
                             }
