@@ -12,13 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="56dp" />
-
     <ImageView
         android:id="@+id/logo_iv"
         android:layout_width="241dp"
@@ -87,7 +80,6 @@
         android:backgroundTint="@color/colorPrimaryDark"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
-
         app:layout_constraintBottom_toTopOf="@id/sign_up_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

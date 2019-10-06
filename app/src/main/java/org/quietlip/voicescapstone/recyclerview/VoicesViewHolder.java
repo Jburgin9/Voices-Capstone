@@ -95,7 +95,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(final AudioModel audio) {
-
         title.setText(audio.getTitle());
         audioId = audio.getAudioId();
         pathId = audio.getPathId();
@@ -106,14 +105,12 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         calendar.setTimeInMillis(time);
         timeStamp.setText(formatter.format(calendar.getTime()));
 
-
         final UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
         if (user1 != null) {
             String currentUserName = user1.getUserName();
             userid = user1.getUserId();
             getColor();
             username.setText(currentUserName);
-            Log.e("currentUser", currentUserName);
             Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
 
 
