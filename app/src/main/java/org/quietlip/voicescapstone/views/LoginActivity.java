@@ -25,7 +25,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText usernameInputET, passwordInputET;
     private Button loginBtn, signUpBTN;
-    private ImageView logoIV;
     private FirebaseAuth loginAuth;
     private Helper helper;
     private CoordinatorLayout coord;
@@ -36,7 +35,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
-
         signUpBTN.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
     }
@@ -46,11 +44,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         usernameInputET = findViewById(R.id.username_et);
         passwordInputET = findViewById(R.id.password_et);
         loginBtn = findViewById(R.id.login_btn);
-        logoIV = findViewById(R.id.logo_iv);
         signUpBTN = findViewById(R.id.sign_up_btn);
         loginAuth = FirebaseAuth.getInstance();
         helper = Helper.getInstance();
-        coord = findViewById(R.id.coordinator_login);
+        coord = findViewById(R.id.coordinator_helper);
     }
 
     //onClick

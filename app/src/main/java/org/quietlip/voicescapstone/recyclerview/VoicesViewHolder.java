@@ -2,32 +2,25 @@ package org.quietlip.voicescapstone.recyclerview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.firebase.ui.auth.data.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -36,28 +29,19 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
-import org.quietlip.voicescapstone.views.BaseActivity;
 import org.quietlip.voicescapstone.views.CommentActivity;
-import org.quietlip.voicescapstone.views.FeedActivity;
-import org.quietlip.voicescapstone.views.ProfileActivity;
-import org.quietlip.voicescapstone.views.RecordActivity;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
-
 public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "PROUD";
-
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private ImageView play;
     private TextView title;
@@ -67,17 +51,50 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private SeekBar durationSb;
     private TextView timeStamp;
     private ImageView color;
+    private CardView content;
 
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
     private Handler handler;
     private Runnable runnable;
-    private CardView content;
 
     private String userid;
     private String audioId;
     private String pathId;
     private StorageReference stRef;
+    private FirebaseFirestore firestore;
+    private UserModel user1;
+
+    private boolean multiSelect = false;
+    private ArrayList<AudioModel> selectedItems = new ArrayList<AudioModel>();
+    private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            multiSelect = true;
+            menu.add("Delete");
+//                mode.setTitle(selectedItems.size() + " items selected");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Log.d(TAG, "onActionItemClicked: ");
+            if (item.getTitle().equals("Delete")){
+                deletion(selectedItems);
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -92,6 +109,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         color = itemView.findViewById(R.id.color);
         content = itemView.findViewById(R.id.content);
         duratonSeek();
+
     }
 
     public void onBind(final AudioModel audio) {
@@ -105,7 +123,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         calendar.setTimeInMillis(time);
         timeStamp.setText(formatter.format(calendar.getTime()));
 
-        final UserModel user1 = CurrentUserManager.getInstance().getCurrentUser();
+        user1 = CurrentUserManager.getCurrentUser();
         if (user1 != null) {
             String currentUserName = user1.getUserName();
             userid = user1.getUserId();
@@ -115,18 +133,13 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
 
 
         }
-        profilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stRef = FirebaseStorage.getInstance().getReference(user1.getUserId()).child("audio").child(audioId);
+                stRef = FirebaseStorage.getInstance().getReference(user1.getUserId()).child(
+                        "audio").child(audioId);
                 Log.d(TAG, "onClick: " + audioId);
                 stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
@@ -147,6 +160,16 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                 });
             }
         });
+
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ((AppCompatActivity) v.getContext()).startActionMode(actionModeCallbacks);
+                selectItem(audio);
+                return true;
+            }
+        });
+
 
         commentMic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,6 +272,39 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    void selectItem(AudioModel audio) {
+        if (multiSelect) {
+            if (selectedItems.contains(audio)) {
+                selectedItems.remove(audio);
+                title.setText("Removed");
+                content.setCardElevation(10);
+            } else {
+                selectedItems.add(audio);
+                title.setText("Added");
+                content.setCardElevation(0);
+            }
+        }
+    }
+
+    public void deletion(final List<AudioModel> audio) {
+        if (user1 != null && audio.size() == 1) {
+            stRef = FirebaseStorage.getInstance().getReference(user1.getUserId()).child("audio").child(audio.get(0).getAudioId());
+            stRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: note deleted" + audio.get(0).getAudioId());
+                }
+            });
+            firestore = FirebaseFirestore.getInstance();
+            firestore.collection("users").document(user1.getUserId())
+                    .collection("audio").document(audio.get(0).getAudioId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: fireStore Deletion");
+                }
+            });
+        }
+    }
 }
 
 
