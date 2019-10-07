@@ -22,13 +22,16 @@ import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 
 public class CurrentUserManager {
     private static final String TAG = "UserMgr";
+    private static CurrentUserManager ourInstance;
 
-    static UserModel currentUser;
-    static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static UserModel currentUser;
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     static FirebaseAuth auth = FirebaseAuth.getInstance();
-    private static final CurrentUserManager ourInstance = new CurrentUserManager();
 
     public static CurrentUserManager getInstance() {
+        if(ourInstance == null){
+            ourInstance = new CurrentUserManager();
+        }
         return ourInstance;
     }
 

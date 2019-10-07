@@ -126,6 +126,7 @@ public class ProfileActivity extends BaseActivity {
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
+                        voicesAdapter.updateList(audioList);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                     }
                 });

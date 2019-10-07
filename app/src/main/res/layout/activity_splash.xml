@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,27 +12,19 @@
         android:layout_width="241dp"
         android:layout_height="75dp"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         android:src="@drawable/voiceslogo"
-        app:layout_constraintBottom_toTopOf="@+id/gifImageView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.089"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.802" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="180dp"/>
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
         android:layout_width="331dp"
         android:layout_height="369dp"
-        android:layout_marginBottom="116dp"
         android:scaleType="centerCrop"
         android:src="@drawable/pi_soundwave"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="250dp"/>
 
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
