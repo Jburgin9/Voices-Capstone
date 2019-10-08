@@ -65,37 +65,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
     private FirebaseFirestore firestore;
     private UserModel user1;
 
-    private boolean multiSelect = false;
-    private ArrayList<AudioModel> selectedItems = new ArrayList<AudioModel>();
-    private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            multiSelect = true;
-            menu.add("Delete");
-//                mode.setTitle(selectedItems.size() + " items selected");
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Log.d(TAG, "onActionItemClicked: ");
-            if (item.getTitle().equals("Delete")){
-                deletion(selectedItems);
-            }
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-
-        }
-    };
-
     public VoicesViewHolder(@NonNull View itemView) {
         super(itemView);
         play = itemView.findViewById(R.id.profile_play);
@@ -130,10 +99,7 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
             getColor();
             username.setText(currentUserName);
             Picasso.get().load(user1.getImageUrl()).fit().into(profilePic);
-
-
         }
-
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,16 +126,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                 });
             }
         });
-
-        itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ((AppCompatActivity) v.getContext()).startActionMode(actionModeCallbacks);
-                selectItem(audio);
-                return true;
-            }
-        });
-
 
         commentMic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,40 +225,6 @@ public class VoicesViewHolder extends RecyclerView.ViewHolder {
                 color.setBackground(itemView.getContext().getResources().getDrawable(R.drawable.green));
 //                Picasso.get().load(R.drawable.green).fit().into(color);
                 break;
-        }
-    }
-
-    void selectItem(AudioModel audio) {
-        if (multiSelect) {
-            if (selectedItems.contains(audio)) {
-                selectedItems.remove(audio);
-                title.setText("Removed");
-                content.setCardElevation(10);
-            } else {
-                selectedItems.add(audio);
-                title.setText("Added");
-                content.setCardElevation(0);
-            }
-        }
-    }
-
-    public void deletion(final List<AudioModel> audio) {
-        if (user1 != null && audio.size() == 1) {
-            stRef = FirebaseStorage.getInstance().getReference(user1.getUserId()).child("audio").child(audio.get(0).getAudioId());
-            stRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: note deleted" + audio.get(0).getAudioId());
-                }
-            });
-            firestore = FirebaseFirestore.getInstance();
-            firestore.collection("users").document(user1.getUserId())
-                    .collection("audio").document(audio.get(0).getAudioId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: fireStore Deletion");
-                }
-            });
         }
     }
 }

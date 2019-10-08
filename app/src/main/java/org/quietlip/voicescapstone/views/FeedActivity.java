@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,7 @@ import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.FeedAdapter;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
+import org.quietlip.voicescapstone.utilis.SwipeDeleteCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,11 +67,7 @@ public class FeedActivity extends BaseActivity {
         setBottomNav(navigation);
 
         recyclerView = findViewById(R.id.feed_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         retrieveFeed();
-
-
     }
 
     private void retrieveFeed() {
@@ -110,6 +108,7 @@ public class FeedActivity extends BaseActivity {
                                                     }
                                                     feedAdapter = new FeedAdapter(feedAudioList);
                                                     recyclerView.setAdapter(feedAdapter);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                                                 } else {
                                                     Log.d("help", "Error getting documents: ", task.getException());
 

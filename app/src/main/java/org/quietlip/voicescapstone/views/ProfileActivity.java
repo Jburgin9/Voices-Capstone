@@ -5,10 +5,15 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,6 +35,7 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
+import org.quietlip.voicescapstone.utilis.SwipeDeleteCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +45,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends BaseActivity {
-
+    private static final String DOC_PHOTO = "Photos";
 
     private CircleImageView profile_pic;
     private TextView aboutME;
@@ -47,6 +53,7 @@ public class ProfileActivity extends BaseActivity {
     private ImageView play;
     private TextView title;
     private ImageView mic;
+    private Toolbar toolbar;
 
     private MediaPlayer player;
     private boolean mPlay = true;
@@ -56,7 +63,6 @@ public class ProfileActivity extends BaseActivity {
     private BottomNavigationView navigation;
 
     private static String audioFile;
-    private static final String DOC_PHOTO = "Photos";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
@@ -69,6 +75,7 @@ public class ProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_recycler);
+
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
 
@@ -80,6 +87,7 @@ public class ProfileActivity extends BaseActivity {
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
         audioFile = getExternalCacheDir().getAbsolutePath();
+//        toolbar = findViewById(R.id.helper_toolbar);
 
         retrieveUserInfo();
         getListfromdb();
@@ -126,8 +134,9 @@ public class ProfileActivity extends BaseActivity {
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
-                        voicesAdapter.updateList(audioList);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                        ItemTouchHelper swipeHelper = new ItemTouchHelper(new SwipeDeleteCallback(voicesAdapter, getApplicationContext()));
+                        swipeHelper.attachToRecyclerView(recyclerView);
                     }
                 });
     }

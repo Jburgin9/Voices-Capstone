@@ -6,6 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 
@@ -39,5 +44,32 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public int getItemCount() {
         return commentList.size();
+    }
+
+    public void deleteItem(int position) {
+        AudioModel recentlyDeletedItem = commentList.get(position);
+        int recentlyDeletedItemPosition = position;
+
+        StorageReference stRef =
+                FirebaseStorage.getInstance().getReference(recentlyDeletedItem.getUser().getUserId())
+                        .child("audio").child(recentlyDeletedItem.getAudioId());
+        stRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        });
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("users").document(recentlyDeletedItem.getUser().getUserId())
+                .collection("audio").document(recentlyDeletedItem.getAudioId())
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        });
+        commentList.remove(position);
+        notifyItemRemoved(position);
     }
 }

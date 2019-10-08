@@ -7,7 +7,7 @@
     android:background="@color/colorPrimary"
     tools:context=".views.LoginActivity">
 
-    <include layout="@layout/coordinator_helper" />
+    <include layout="@layout/helper_coordinator" />
 
     <ImageView
         android:id="@+id/logo_iv"
