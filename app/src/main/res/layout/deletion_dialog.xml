@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Would You Like To Delete This Post?"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/dialog_positive_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yes"
+        android:layout_below="@id/dialog_title"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/dialog_negative_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/dialog_title"
+        android:layout_marginTop="10dp"
+        />
+
+</RelativeLayout>

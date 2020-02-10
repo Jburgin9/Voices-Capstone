@@ -1,33 +1,41 @@
 package org.quietlip.voicescapstone.views;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-
     private EditText usernameInputET, passwordInputET;
     private Button loginBtn, signUpBTN;
     private FirebaseAuth loginAuth;
     private Helper helper;
     private CoordinatorLayout coord;
+    private ConnectivityManager conMgr;
+    private NetworkInfo activeNetworkInfo;
 
 
     @Override
@@ -37,6 +45,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initViews();
         signUpBTN.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
+        conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        activeNetworkInfo = conMgr.getActiveNetworkInfo();
     }
 
     //initViews
@@ -63,43 +73,46 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    //onStart
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = loginAuth.getCurrentUser();
-        if (currentUser == null) {
-            //snackbar user not signed in
-        }
-    }
-
     //login
     protected void login() {
-        String username = usernameInputET.getText().toString();
-        String password = passwordInputET.getText().toString();
+        String username = usernameInputET.getText().toString().trim();
+        String password = passwordInputET.getText().toString().trim();
 
-        if (!TextUtils.isEmpty(username)  && !TextUtils.isEmpty(password)) {
-            helper.makeFirelog(this, "", "loading . . .");
+        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+            helper.makeFirelog(this, "", "Loading . . .");
             loginAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                helper.dismissFirelog();
-                                helper.makeSnackie(coord, "success");
                                 String uid = FirebaseAuth.getInstance().getUid();
+
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sharedPref(uid);
+                                    }
+                                }, 5000);
                                 CurrentUserManager.getInstance().setUser(uid);
-                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                                startActivity(new Intent(LoginActivity.this,
+                                        ProfileActivity.class));
                             } else {
                                 helper.dismissFirelog();
-                                helper.makeSnackie(coord, "failure");
+                                helper.makeSnackie(coord, "Failure");
                             }
                         }
                     });
-        } else if (TextUtils.isEmpty(username)){
+        } else if (TextUtils.isEmpty(username)) {
             helper.makeSnackie(coord, "please enter username");
         } else if (TextUtils.isEmpty(password)) {
             helper.makeSnackie(coord, "please enter password");
         }
+    }
+
+    public void sharedPref(String userId) {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("savedUser", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userId", userId);
+        editor.apply();
     }
 }

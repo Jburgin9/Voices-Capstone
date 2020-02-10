@@ -9,26 +9,21 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -39,15 +34,11 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.opencensus.tags.Tag;
 
 public class RecordActivity extends BaseActivity {
 
@@ -219,10 +210,7 @@ public class RecordActivity extends BaseActivity {
         filepath.putFile(uri).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
                 progressDialog.dismiss();
-
-
             }
         });
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -230,7 +218,6 @@ public class RecordActivity extends BaseActivity {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                 AudioModel audioModel = new AudioModel(uri.toString(), titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),newAudioModelId,"");
                 db.collection(users).document(currentUserUID).collection("audio").document(newAudioModelId)
                         .set(audioModel)
@@ -249,7 +236,6 @@ public class RecordActivity extends BaseActivity {
                         });
 
                 progressDialog.dismiss();
-
             }
         });
     }

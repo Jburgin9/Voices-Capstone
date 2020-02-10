@@ -4,9 +4,9 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatImageButton;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,7 +14,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -27,14 +26,12 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "PROUD";
     private ImageView play;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView title;
     private MediaPlayer mediaPlayer;
     private boolean mPlay = true;
@@ -42,7 +39,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private TextView username;
     private TextView timeStamp;
     private ImageView color;
-
 
     AudioModel audioModel;
     private StorageReference stRef;

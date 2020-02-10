@@ -7,10 +7,17 @@ public class AudioModel implements Comparator<AudioModel>, Comparable<AudioModel
     private String title;
     private String audioId;
     private String pathId;
-
+    private boolean isSelected = false;
 
     private UserModel user;
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 
     public AudioModel(String uri, String audioTitle, UserModel user, String audioId, String pathId) {
         this.uri = uri;

@@ -2,22 +2,22 @@ package org.quietlip.voicescapstone.models;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-public class UserModel {
+
+public class UserModel{
+    private String aboutMe;
+    private String imageUrl;
     private String userId;
     private String userName;
-    private String imageUrl;
-    private String aboutMe;
 
-
-
-   public UserModel(String userName , String userId, String imageUrl, String aboutMe) {
-        this.userName = userName;
-        this.userId = userId;
-       this.imageUrl = imageUrl;
-       this.aboutMe = aboutMe;
-
+   public UserModel(String aboutMe, String imageUrl, String userId, String userName) {
+        this.aboutMe = aboutMe;
+        this.imageUrl = imageUrl;
+       this.userId = userId;
+       this.userName = userName;
     }
 
     public String getImageUrl() {
@@ -29,7 +29,11 @@ public class UserModel {
     }
 
     public String getUserId() {
-        return userId;
+        if(userId != null) {
+            return userId;
+        } else {
+            return "null userId";
+        }
     }
 
     public void setUserId(String userId) {
@@ -50,6 +54,15 @@ public class UserModel {
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "About me: " + aboutMe +
+                "Image Url: " + imageUrl +
+                "User Id: " + userId +
+                "Username: " + userName;
     }
 
 }

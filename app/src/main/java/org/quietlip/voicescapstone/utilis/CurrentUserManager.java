@@ -1,74 +1,76 @@
 package org.quietlip.voicescapstone.utilis;
 
-import android.os.Debug;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+
+import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
-import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 
-public class CurrentUserManager {
-    private static final String TAG = "UserMgr";
-    private static CurrentUserManager ourInstance;
+/*
+*Already extends application but still loses track of UserModel state
+ */
 
-    private static UserModel currentUser;
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    static FirebaseAuth auth = FirebaseAuth.getInstance();
+public class CurrentUserManager extends Application {
+    private UserModel currentUser;
+    private FirebaseFirestore db;
 
-    public static CurrentUserManager getInstance() {
-        if(ourInstance == null){
-            ourInstance = new CurrentUserManager();
-        }
-        return ourInstance;
+    private CurrentUserManager() {
+        db = FirebaseFirestore.getInstance();
     }
 
-    private CurrentUserManager() {}
-
-    public static void createUser(UserModel user){
-        Log.d(TAG, "createUser: called");
+    public void createUser(UserModel user) {
         db.collection("users").document(user.getUserId())
-                .set(user)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.d(TAG, "onComplete: ");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
+                .set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "onFailure: ");
+            public void onComplete(@NonNull Task<Void> task) {
+
             }
         });
     }
 
-    public static void setUser(String id) {
+    public void setUser(String id) {
         db.collection("users").document(id)
-                .get().
-                addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        UserModel user = new UserModel(snapshot.get("userName").toString(),snapshot.get("userId").toString(),snapshot.get("imageUrl").toString(),snapshot.get("aboutMe").toString());
-                        currentUser = user;
+                        if(task.isSuccessful()){
+                            DocumentSnapshot snapshot = task.getResult();
+                            if (snapshot != null) {
+                                currentUser = new UserModel(snapshot.get("aboutMe").toString(),snapshot.get("imageUrl").toString(),
+                                        snapshot.get("userId").toString(),snapshot.get("userName").toString());
+                            }
+                        }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("UserMgr", e.getMessage());
+            }
+        });
     }
 
-    public static UserModel getCurrentUser() {
+    public UserModel getCurrentUser() {
+        Log.d("User", "get: " + currentUser);
         return currentUser;
+    }
+
+    private static class SingletonHelper{
+        private static final CurrentUserManager INSTANCE = new CurrentUserManager();
+    }
+
+    public static CurrentUserManager getInstance(){
+        return SingletonHelper.INSTANCE;
     }
 
 }
