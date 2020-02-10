@@ -1,9 +1,7 @@
 package org.quietlip.voicescapstone.recyclerview;
 
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.quietlip.voicescapstone.R;
-import org.quietlip.voicescapstone.models.AudioDiff;
 import org.quietlip.voicescapstone.models.AudioModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,10 +29,9 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     @Override
     public VoicesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view =
-                LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_item_view,
+                LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_recording_item,
                         viewGroup, false);
         return new VoicesViewHolder(view);
-
     }
 
     @Override
@@ -53,26 +48,29 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
         AudioModel recentlyDeletedItem = audioList.get(position);
         int recentlyDeletedItemPosition = position;
 
-        StorageReference stRef =
-                FirebaseStorage.getInstance().getReference(recentlyDeletedItem.getUser().getUserId())
-                .child("audio").child(recentlyDeletedItem.getAudioId());
-        stRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
+        //might have to null check the userId
+        if (recentlyDeletedItem != null && recentlyDeletedItem.getAudioId() != null) {
+            StorageReference stRef =
+                    FirebaseStorage.getInstance().getReference(recentlyDeletedItem.getUser().getUserId())
+                            .child("audio").child(recentlyDeletedItem.getAudioId());
+            stRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
 
-            }
-        });
+                }
+            });
 
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection("users").document(recentlyDeletedItem.getUser().getUserId())
-                .collection("audio").document(recentlyDeletedItem.getAudioId())
-                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+            firestore.collection("users").document(recentlyDeletedItem.getUser().getUserId())
+                    .collection("audio").document(recentlyDeletedItem.getAudioId())
+                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
 
-            }
-        });
-        audioList.remove(position);
-        notifyItemRemoved(position);
+                }
+            });
+            audioList.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 }

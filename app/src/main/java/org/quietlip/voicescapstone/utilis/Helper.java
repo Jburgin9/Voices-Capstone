@@ -2,8 +2,8 @@ package org.quietlip.voicescapstone.utilis;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 public class Helper {
     private static Helper instance;
@@ -25,14 +25,10 @@ public class Helper {
         snackie.show();
     }
 
-    public void makeSnackie(CoordinatorLayout coord, String ... varags){
-        //add action
-    }
-
-    public void makeFirelog(Context context, String ... setup){
+    public void makeFirelog(Context context, String title, String message){
         firelog = new ProgressDialog(context);
-        firelog.setTitle(setup[0]);
-        firelog.setMessage(setup[1]);
+        firelog.setTitle(title);
+        firelog.setMessage(message);
         firelog.setCanceledOnTouchOutside(true);
         firelog.show();
     }

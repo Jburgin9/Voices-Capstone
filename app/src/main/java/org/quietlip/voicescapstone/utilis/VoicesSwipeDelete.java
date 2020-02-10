@@ -1,55 +1,38 @@
 package org.quietlip.voicescapstone.utilis;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.view.View;
 
 import org.quietlip.voicescapstone.R;
-import org.quietlip.voicescapstone.recyclerview.CommentAdapter;
-import org.quietlip.voicescapstone.recyclerview.FeedAdapter;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 
-public class SwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
-   private VoicesAdapter voicesAdapter;
-   private FeedAdapter feedAdapter;
-   private CommentAdapter commentAdapter;
-   private Drawable icon;
-   private final ColorDrawable background;
+public class VoicesSwipeDelete extends ItemTouchHelper.SimpleCallback {
+    private static final String TAG = "Swipe";
+    private VoicesAdapter voicesAdapter;
+    private Drawable icon;
+    private final ColorDrawable background;
 
-    public SwipeDeleteCallback(VoicesAdapter adapter, Context context){
+    public VoicesSwipeDelete(VoicesAdapter adapter, Context context) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.voicesAdapter = adapter;
         icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
         background = new ColorDrawable(Color.RED);
     }
 
-    public SwipeDeleteCallback(FeedAdapter adapter, Context context){
-        super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        this.feedAdapter = adapter;
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
-        background = new ColorDrawable(Color.RED);
-    }
-
-    public SwipeDeleteCallback(CommentAdapter adapter, Context context){
-        super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        this.commentAdapter = adapter;
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
-        background = new ColorDrawable(Color.RED);
-    }
-
-
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         int position = viewHolder.getAdapterPosition();
         voicesAdapter.deleteItem(position);
+        voicesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -74,7 +57,7 @@ public class SwipeDeleteCallback extends ItemTouchHelper.SimpleCallback {
 
         if (dX > 0) {
             int iconLeft = itemView.getLeft() + iconMargin;
-            int iconRight = iconLeft+ icon.getIntrinsicWidth();
+            int iconRight = iconLeft + icon.getIntrinsicWidth();
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
             background.setBounds(itemView.getLeft(), itemView.getTop(),
                     itemView.getLeft() + ((int) dX) + backgroundCornerOffset,

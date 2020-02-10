@@ -15,7 +15,7 @@
         android:layout_marginEnd="8dp"
         android:src="@drawable/voiceslogo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="180dp"/>
+        android:layout_marginTop="150dp"/>
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/gifImageView"
@@ -24,7 +24,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/pi_soundwave"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="250dp"/>
-
+        android:layout_marginTop="225dp"/>
 
 </RelativeLayout>

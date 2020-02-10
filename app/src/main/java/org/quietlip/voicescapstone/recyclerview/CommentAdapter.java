@@ -1,7 +1,7 @@
 package org.quietlip.voicescapstone.recyclerview;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,23 +13,28 @@ import com.google.firebase.storage.StorageReference;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.utilis.DeletionDialog;
 
 import java.util.List;
 
-public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> implements DeletionDialog.OnCompleteListener {
+    private List<AudioModel> commentList;
+    private String audioId;
+    private View view;
+    private DeletionDialog dialog;
+    private int selectedPosition;
 
-    List<AudioModel> commentList;
-    AudioModel parentAudio;
-
-    public CommentAdapter(List<AudioModel> commentList ) {
+    public CommentAdapter(List<AudioModel> commentList, String audioId) {
         this.commentList = commentList;
-
+        this.audioId = audioId;
     }
 
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment_item_view, viewGroup, false);
+        view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment_item_view, viewGroup, false);
+        dialog = new DeletionDialog(view.getContext());
+        dialog.setCompleteListener(this);
         return new CommentViewHolder(view);
 
     }
@@ -37,7 +42,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder commentViewHolder, int i) {
         commentViewHolder.onBind(commentList.get(i));
-
+        commentViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                selectedPosition = commentViewHolder.getAdapterPosition();
+                dialog.show();
+                return true;
+            }
+        });
     }
 
 
@@ -62,7 +74,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firestore.collection("users").document(recentlyDeletedItem.getUser().getUserId())
-                .collection("audio").document(recentlyDeletedItem.getAudioId())
+                .collection("audio").document(audioId)
+                .collection("commentlist").document(recentlyDeletedItem.getAudioId())
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -70,6 +83,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             }
         });
         commentList.remove(position);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
+//        notifyItemRemoved(position);
+
+    }
+
+    @Override
+    public void onComplete() {
+        deleteItem(selectedPosition);
+        dialog.dismiss();
     }
 }

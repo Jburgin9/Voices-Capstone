@@ -11,10 +11,10 @@
 
     <ImageView
         android:id="@+id/logo_iv"
-        android:layout_width="241dp"
-        android:layout_height="wrap_content"
+        android:layout_width="175dp"
+        android:layout_height="100dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="150dp"
         android:src="@drawable/voiceslogo" />
 
     <EditText
@@ -27,6 +27,7 @@
         android:drawableStart="@drawable/ic_user"
         android:gravity="center"
         android:text="fribel@gmail.com"
+        android:hint="Enter Username"
         android:padding="10dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="20sp"
@@ -45,6 +46,7 @@
         android:gravity="center"
         android:text="123456"
         android:inputType="textPassword"
+        android:hint="Enter Password"
         android:padding="10dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="20sp"

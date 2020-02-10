@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content"
+    android:id="@+id/feed_card_view"
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:elevation="20dp"
@@ -12,79 +12,66 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary">
+        android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/color"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY" />
-
-        <ImageView
-            android:id="@+id/profile_play"
+            android:id="@+id/feed_play_btn"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="15dp"
             android:layout_marginTop="25dp"
-            android:layout_toEndOf="@+id/profile_image"
+            android:layout_toEndOf="@+id/feed_image"
             android:src="@drawable/play_button" />
 
         <ImageView
-            android:id="@+id/profile_mic"
+            android:id="@+id/feed_comments_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/profile_seekbar"
-            android:layout_toEndOf="@id/profile_seekbar"
             android:onClick="recordAudio"
-
-            android:src="@drawable/comments_tab" />
-
-        <SeekBar
-            android:id="@+id/profile_seekbar"
-            android:layout_width="200dp"
-            android:layout_height="25dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:layout_toEndOf="@+id/profile_play"
-            android:background="@drawable/accent_border" />
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/comments_tab"
+            android:layout_marginEnd="20dp"/>
 
         <TextView
-            android:id="@+id/profile_username"
+            android:id="@+id/feed_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Username"
             android:textColor="@color/colorAccent"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:layout_below="@id/profile_image"
+            android:layout_below="@id/feed_image"
             android:layout_marginStart="18dp"
             />
 
         <TextView
-            android:id="@+id/time_stamp"
+            android:id="@+id/feed_time_stamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginEnd="55dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="4dp"
             android:hint="@string/created"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="italic"/>
 
         <TextView
-            android:id="@+id/profile_title"
+            android:id="@+id/feed_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+           android:layout_marginStart="15dp"
             android:text="title"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/feed_play_btn"
             android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="italic|bold"
+            android:maxLength="20"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
+            android:id="@+id/feed_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
@@ -93,7 +80,7 @@
             app:civ_border_width="2dp" />
 
     </RelativeLayout>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>
 
     <!--
                 <ImageView
