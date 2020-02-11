@@ -151,9 +151,10 @@ public class CommentActivity extends BaseActivity {
         duratonSeekRecord();
     }
 
+
+    //TODO: Repo class that will make call to Firebase to retrieve info
     private void retrieveParentAudio() {
         final HashMap<String, String>[] usermap = new HashMap[]{new HashMap<String, String>()};
-        Log.d(TAG, "retrieveParentAudio: " + currentAudioId);
         if (userId != null && currentAudioId != null) {
             db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -163,14 +164,13 @@ public class CommentActivity extends BaseActivity {
                                 if (usermap[0] != null) {
                                     DocumentSnapshot document = task.getResult();
                                     usermap[0] = (HashMap<String, String>) document.get("user");
-                                    final UserModel user = new UserModel(usermap[0].get("aboutMe"),
+                                     final UserModel user = new UserModel(usermap[0].get("aboutMe"),
                                             usermap[0].get("imageUrl"), usermap[0].get("userId"),
                                             usermap[0].get("userName"));
-                                    audio =
-                                            (new AudioModel(document.get("uri").toString(),
+                                    audio = new AudioModel(document.get("uri").toString(),
                                                     document.get("title").toString(), user,
                                                     document.get("audioId").toString(),
-                                                    document.getId()));
+                                                    document.getId());
                                     viewModel = new AudioViewModel(audio);
                                     user.getUserId();
                                     getColor();
@@ -300,7 +300,10 @@ public class CommentActivity extends BaseActivity {
                                         commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                     }
                                 }
-                                commentAdapter = new CommentAdapter(commentList, audio.getAudioId());
+                                if(audio != null){
+                                    commentAdapter = new CommentAdapter(commentList, audio.getAudioId());
+                                }
+
                                 recyclerView.setAdapter(commentAdapter);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                                 ItemTouchHelper itemTouchHelper =

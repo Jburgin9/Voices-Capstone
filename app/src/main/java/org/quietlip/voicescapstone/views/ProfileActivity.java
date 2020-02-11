@@ -32,6 +32,7 @@ import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
+import org.quietlip.voicescapstone.utilis.SetUserTask;
 import org.quietlip.voicescapstone.utilis.VoicesSwipeDelete;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class ProfileActivity extends BaseActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
 //    StorageReference storage = FirebaseStorage.getInstance().getReference(currentUserUID).child(DOC_PHOTO);
+    private SetUserTask userTask;
 
     private List<AudioModel> audioList;
     private CurrentUserManager instance;
@@ -68,8 +70,12 @@ public class ProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         instance = CurrentUserManager.getInstance();
+        userTask = new SetUserTask(this);
+
+            userTask.execute(currentUserUID);
+
+
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
         profile_pic = findViewById(R.id.profile_image);
@@ -80,15 +86,8 @@ public class ProfileActivity extends BaseActivity {
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
         audioFile = getExternalCacheDir().getAbsolutePath();
-        Helper.getInstance().makeFirelog(this, "Loading info", "Please wait, loading profile " +
-                "information");
         getListfromdb();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                retrieveUserInfo();
-            }
-        }, 5000);
+        retrieveUserInfo();
     }
 
     private void retrieveUserInfo() {
@@ -98,9 +97,6 @@ public class ProfileActivity extends BaseActivity {
             aboutME.setText(user.getAboutMe());
             userName.setText(user.getUserName());
             Picasso.get().load(user.getImageUrl()).into(profile_pic);
-            Helper.getInstance().dismissFirelog();
-        } else {
-            aboutME.setText("error loading");
         }
     }
 
