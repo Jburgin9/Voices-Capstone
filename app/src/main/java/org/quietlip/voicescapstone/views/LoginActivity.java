@@ -86,13 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 String uid = FirebaseAuth.getInstance().getUid();
-
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        sharedPref(uid);
-                                    }
-                                }, 5000);
+                                sharedPref(uid);
                                 CurrentUserManager.getInstance().setUser(uid);
                                 startActivity(new Intent(LoginActivity.this,
                                         ProfileActivity.class));
