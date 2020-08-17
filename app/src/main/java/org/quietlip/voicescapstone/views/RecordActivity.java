@@ -143,20 +143,21 @@ public class RecordActivity extends BaseActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                stopRecording();
-
                 if (mPlay) {
                     play.setImageResource(R.drawable.stop);
                     startPlaying();
-                    changeSeekBar();
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            play.setImageResource(R.drawable.play_button);
+                        }
+                    });
                 } else {
                     play.setImageResource(R.drawable.play_button);
                     stopPlaying();
                 }
                 mPlay = !mPlay;
             }
-
-            //                fetchAudioUrlFromFirebase();
         });
     }
 
@@ -266,7 +267,7 @@ public class RecordActivity extends BaseActivity {
     }
 
     private void startPlaying() {
-        mediaPlayer = new MediaPlayer();
+         mediaPlayer = new MediaPlayer();
 
         try {
             mediaPlayer.setDataSource(audioFile);
@@ -276,6 +277,7 @@ public class RecordActivity extends BaseActivity {
                     durationSb.setMax(mediaPlayer.getDuration());
                     mediaPlayer.start();
                     changeSeekBar();
+
                 }
             });
             mediaPlayer.prepareAsync();

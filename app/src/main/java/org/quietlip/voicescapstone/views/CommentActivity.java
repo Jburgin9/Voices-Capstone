@@ -10,12 +10,13 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,6 +37,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
@@ -42,7 +45,6 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.CommentAdapter;
 import org.quietlip.voicescapstone.utilis.AudioViewModel;
-import org.quietlip.voicescapstone.utilis.CommentsSwipeDelete;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 
 import java.io.File;
@@ -50,10 +52,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.subjects.PublishSubject;
 
 public class CommentActivity extends BaseActivity {
+    BiFunction<Integer, Integer, Integer> sum = (x, y) -> x + y;
 
     String users = "users";
     List<AudioModel> commentList;
@@ -64,12 +72,12 @@ public class CommentActivity extends BaseActivity {
 
     private BottomNavigationView navigationView;
     private MediaRecorder mediaRecorder;
-    private MediaPlayer player;
+    private MediaPlayer commentPlayer;
     private CircleImageView record;
-    private ImageView play;
+    private ImageView commentRecordingPlay;
     private Button post;
     private EditText titleInput;
-    private SeekBar recordSeekbar;
+    private SeekBar commentSeekBar;
 
     private RecyclerView recyclerView;
     private CommentAdapter commentAdapter;
@@ -90,17 +98,16 @@ public class CommentActivity extends BaseActivity {
     String userId;
     String currentAudioId;
     String audioId;
-    private AudioModel audio;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     FirebaseStorage storage = FirebaseStorage.getInstance("gs://voicescapstone.appspot.com");
     private StorageReference mStorageRef = storage.getReference();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
-    private final String TAG = "CURRENTTIME";
     private StorageReference stRef;
     private Handler handler;
     private Runnable runnable;
     private AudioViewModel viewModel;
+    private AudioModel audioResult;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private boolean permissionToRecordAccepted = false;
@@ -114,15 +121,14 @@ public class CommentActivity extends BaseActivity {
         navigationView = findViewById(R.id.bottom_nav);
         setBottomNav(navigationView);
 
-
         userId = getIntent().getStringExtra("userid");
         currentAudioId = getIntent().getStringExtra("audioid");
         pathId = getIntent().getStringExtra("pathid");
 
-        recordSeekbar = findViewById(R.id.comment_record_seek);
+        commentSeekBar = findViewById(R.id.comment_record_seek);
         handler = new Handler();
         record = findViewById(R.id.record_button_comment);
-        play = findViewById(R.id.play_button_comment);
+        commentRecordingPlay = findViewById(R.id.play_button_comment);
         post = findViewById(R.id.post_button_comment);
         titleInput = findViewById(R.id.title_input_comment);
 
@@ -139,45 +145,35 @@ public class CommentActivity extends BaseActivity {
 
         audioFile = getExternalCacheDir().getAbsolutePath();
         audioFile += System.currentTimeMillis() + "_recorded_audio.3pg";
-        Log.d(TAG, audioFile);
 
+        commentDurationSeek();
         askPermission();
         retrieveParentAudio();
-        setRecordAudioOnClick();
-        setPlayAudioBackOnClick();
-        setPostAudioOnClick();
+        recordAudio();
+        playbackAudio();
+        postAudio();
         retrieveComments();
         duratonSeek();
-        duratonSeekRecord();
     }
 
 
     //TODO: Repo class that will make call to Firebase to retrieve info
     private void retrieveParentAudio() {
-        final HashMap<String, String>[] usermap = new HashMap[]{new HashMap<String, String>()};
         if (userId != null && currentAudioId != null) {
             db.collection("users").document(userId).collection("audio").document(currentAudioId).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
-                                if (usermap[0] != null) {
-                                    DocumentSnapshot document = task.getResult();
-                                    usermap[0] = (HashMap<String, String>) document.get("user");
-                                     final UserModel user = new UserModel(usermap[0].get("aboutMe"),
-                                            usermap[0].get("imageUrl"), usermap[0].get("userId"),
-                                            usermap[0].get("userName"));
-                                    audio = new AudioModel(document.get("uri").toString(),
-                                                    document.get("title").toString(), user,
-                                                    document.get("audioId").toString(),
-                                                    document.getId());
-                                    viewModel = new AudioViewModel(audio);
+                                    audioResult = task.getResult().toObject(AudioModel.class);
+                                    UserModel user = audioResult.getUser();
+                                    viewModel = new AudioViewModel(audioResult);
                                     user.getUserId();
                                     getColor();
                                     parentUsername.setText(user.getUserName());
-                                    parentTitle.setText((audio.getTitle()));
+                                    parentTitle.setText((audioResult.getTitle()));
                                     Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
-                                    audioId = audio.getAudioId();
+                                    audioId = audioResult.getAudioId();
                                     parentTime.setText(viewModel.getTimeStamp());
                                     parentPlay.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -192,7 +188,7 @@ public class CommentActivity extends BaseActivity {
                                                         changeSeekBar();
                                                     } else {
                                                         parentPlay.setImageResource(R.drawable.play_button);
-                                                        stopparentPlaying();
+                                                        stopParentPlayer();
                                                     }
                                                     mPlay = !mPlay;
                                                 }
@@ -201,7 +197,7 @@ public class CommentActivity extends BaseActivity {
                                     });
                                 }
                             }
-                        }
+
                     });
         }
     }
@@ -227,31 +223,22 @@ public class CommentActivity extends BaseActivity {
     }
 
 
-    private void setPlayAudioBackOnClick() {
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    private void playbackAudio() {
+        commentRecordingPlay.setOnClickListener(v -> {
                 if (mPlay) {
-                    play.setImageResource(R.drawable.ic_stopp);
-                    startPlayingRecord();
+                    commentRecordingPlay.setImageResource(R.drawable.ic_stopp);
+                    startCommentPlayback();
+                    commentPlayer.setOnCompletionListener(mp -> commentRecordingPlay.setImageResource(R.drawable.play_button));
                 } else {
-                    play.setImageResource(R.drawable.play_button);
+                    commentRecordingPlay.setImageResource(R.drawable.play_button);
                     stopPlaying();
                 }
                 mPlay = !mPlay;
-            }
         });
     }
 
-    private void setPostAudioOnClick() {
-        post.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadAudio();
-                titleInput.onEditorAction(EditorInfo.IME_ACTION_DONE);
-//                titleInput.clearComposingText();
-            }
-        });
+    private void postAudio() {
+        post.setOnClickListener(v -> uploadAudio());
     }
 
     private void askPermission() {
@@ -263,7 +250,7 @@ public class CommentActivity extends BaseActivity {
         }
     }
 
-    private void setRecordAudioOnClick() {
+    private void recordAudio() {
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,7 +279,7 @@ public class CommentActivity extends BaseActivity {
                                     if (myList.get(i).get("user") != null) {
                                         HashMap<String, String> usermap = (HashMap<String,
                                                 String>) myList.get(i).get("user");
-                                        final UserModel user = new UserModel(usermap.get(
+                                        UserModel user = new UserModel(usermap.get(
                                                 "aboutMe"),
                                                 usermap.get("imageUrl"),
                                                 usermap.get("userId"), usermap.get("userName"));
@@ -300,15 +287,11 @@ public class CommentActivity extends BaseActivity {
                                         commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                     }
                                 }
-                                if(audio != null){
-                                    commentAdapter = new CommentAdapter(commentList, audio.getAudioId());
+                                if(audioResult != null){
+                                    commentAdapter = new CommentAdapter(commentList, audioResult.getAudioId());
                                 }
-
                                 recyclerView.setAdapter(commentAdapter);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                ItemTouchHelper itemTouchHelper =
-                                        new ItemTouchHelper(new CommentsSwipeDelete(commentAdapter, getApplicationContext()));
-                                itemTouchHelper.attachToRecyclerView(recyclerView);
                                 progressDialog.dismiss();
                             } else {
                                 Log.d("help", "Error getting documents: ", task.getException());
@@ -327,26 +310,18 @@ public class CommentActivity extends BaseActivity {
         StorageReference filePath =
                 mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(audioId));
         final Uri uri = Uri.fromFile(new File(audioFile));
-        filePath.putFile(uri).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
-
-            }
-        });
-        filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        filePath.putFile(uri).addOnFailureListener(e -> progressDialog.dismiss());
+        filePath.putFile(uri).addOnSuccessListener(taskSnapshot ->  {
                 AudioModel audioModel = new AudioModel(uri.toString(),
                         titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),
                         audioId, "");
                 db.collection(users).document(userId).collection("audio").document(currentAudioId).collection("commentlist")
                         .document(audioId)
-
                         .set(audioModel)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
+                                stopRecording();
                                 retrieveComments();
                             }
                         })
@@ -357,7 +332,6 @@ public class CommentActivity extends BaseActivity {
                             }
                         });
                 progressDialog.dismiss();
-            }
         });
     }
 
@@ -400,11 +374,11 @@ public class CommentActivity extends BaseActivity {
     }
 
     private void stopPlaying() {
-        player.release();
-        player = null;
+        commentPlayer.release();
+        commentPlayer = null;
     }
 
-    private void stopparentPlaying() {
+    private void stopParentPlayer() {
         parentPlayer.release();
         parentPlayer = null;
     }
@@ -420,7 +394,6 @@ public class CommentActivity extends BaseActivity {
             mediaRecorder.start();
         } catch (IOException e) {
             //ToDo give user feedback that recorder is not ready
-            String a = "";
         }
     }
 
@@ -428,24 +401,23 @@ public class CommentActivity extends BaseActivity {
         try {
             mediaRecorder.stop();
             mediaRecorder.release();
+            mediaRecorder.reset();
             mediaRecorder = null;
         } catch (RuntimeException stopException) {
             Log.e("stoprecord", "failed");
         }
     }
 
-    private void startPlayingRecord() {
-        player = new MediaPlayer();
+    private void startCommentPlayback() {
+        commentPlayer = new MediaPlayer();
         try {
-            player.setDataSource(audioFile);
-            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    player.start();
-                    changeRecordSeekBar();
-                }
+            commentPlayer.setDataSource(audioFile);
+            commentPlayer.setOnPreparedListener(mp -> {
+                commentSeekBar.setMax(commentPlayer.getDuration());
+                commentPlayer.start();
+                changeCommentSeekBar();
             });
-            player.prepareAsync();
+            commentPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e("play", "prepare() failed");
         }
@@ -486,26 +458,26 @@ public class CommentActivity extends BaseActivity {
         });
     }
 
-    private void changeRecordSeekBar() {
-        if (player != null) {
-            recordSeekbar.setProgress(player.getCurrentPosition());
-            if (player.isPlaying()) {
+    private void changeCommentSeekBar() {
+        if (commentPlayer != null) {
+            commentSeekBar.setProgress(commentPlayer.getCurrentPosition());
+            if (commentPlayer.isPlaying()) {
                 runnable = new Runnable() {
                     @Override
                     public void run() {
-                        changeSeekBar();
+                        changeCommentSeekBar();
                     }
                 };
-                handler.postDelayed(runnable, 1000);
+                handler.postDelayed(runnable, 500);
             }
         }
     }
 
-    private void duratonSeekRecord() {
-        recordSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+    private void commentDurationSeek() {
+        commentSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                player.seekTo(progress);
+                commentPlayer.seekTo(progress);
 
             }
 
@@ -520,4 +492,5 @@ public class CommentActivity extends BaseActivity {
             }
         });
     }
+
 }

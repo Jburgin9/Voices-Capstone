@@ -58,10 +58,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedItemViewHolder> implem
         return audioList.size();
     }
 
-    public void deleteItem(int position) {
+    private void deleteItem(int position) {
         AudioModel recentlyDeletedItem = audioList.get(position);
 
-        if (recentlyDeletedItem != null && recentlyDeletedItem.getAudioId() != null) {
             StorageReference stRef =
                     FirebaseStorage.getInstance().getReference(recentlyDeletedItem.getUser().getUserId())
                             .child("audio").child(recentlyDeletedItem.getAudioId());
@@ -81,9 +80,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedItemViewHolder> implem
                 }
             });
             audioList.remove(position);
-            notifyItemChanged(position);
-
-        }
+            notifyItemRemoved(position);
     }
 
     @Override

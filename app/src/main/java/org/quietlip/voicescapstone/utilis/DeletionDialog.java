@@ -1,16 +1,20 @@
 package org.quietlip.voicescapstone.utilis;
 
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.IntentCompat;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.views.CommentActivity;
 
 public class DeletionDialog extends Dialog implements View.OnClickListener {
     public interface OnCompleteListener {
@@ -49,7 +53,7 @@ public class DeletionDialog extends Dialog implements View.OnClickListener {
                 completeListener.onComplete();
                 break;
             case R.id.dialog_negative_btn:
-                closeOptionsMenu();
+                cancel();
                 break;
         }
     }
