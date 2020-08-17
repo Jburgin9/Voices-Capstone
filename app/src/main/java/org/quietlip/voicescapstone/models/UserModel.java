@@ -7,17 +7,19 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 
-public class UserModel{
+public class UserModel {
     private String aboutMe;
     private String imageUrl;
     private String userId;
     private String userName;
 
-   public UserModel(String aboutMe, String imageUrl, String userId, String userName) {
+    public UserModel() {}
+
+    public UserModel(String aboutMe, String imageUrl, String userId, String userName) {
         this.aboutMe = aboutMe;
         this.imageUrl = imageUrl;
-       this.userId = userId;
-       this.userName = userName;
+        this.userId = userId;
+        this.userName = userName;
     }
 
     public String getImageUrl() {
@@ -29,7 +31,7 @@ public class UserModel{
     }
 
     public String getUserId() {
-        if(userId != null) {
+        if (userId != null) {
             return userId;
         } else {
             return "null userId";

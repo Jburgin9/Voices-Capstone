@@ -13,13 +13,16 @@ import com.google.firebase.storage.StorageReference;
 
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
+import org.quietlip.voicescapstone.utilis.DeletionDialog;
 
 import java.util.List;
 
 
-public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
-
+public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> implements DeletionDialog.OnCompleteListener {
     private List<AudioModel> audioList;
+    private View view;
+    private DeletionDialog dialog;
+    private int selectedPosition;
 
     public VoicesAdapter(List<AudioModel> audioList) {
         this.audioList = audioList;
@@ -28,15 +31,25 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
     @NonNull
     @Override
     public VoicesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view =
+        view =
                 LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.profile_recording_item,
                         viewGroup, false);
+        dialog = new DeletionDialog(view.getContext());
+        dialog.setCompleteListener(this);
         return new VoicesViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VoicesViewHolder voicesViewHolder, int i) {
         voicesViewHolder.onBind(audioList.get(i));
+        voicesViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                selectedPosition = voicesViewHolder.getAdapterPosition();
+                dialog.show();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -72,5 +85,11 @@ public class VoicesAdapter extends RecyclerView.Adapter<VoicesViewHolder> {
             audioList.remove(position);
             notifyItemRemoved(position);
         }
+    }
+
+    @Override
+    public void onComplete() {
+        deleteItem(selectedPosition);
+        dialog.dismiss();
     }
 }

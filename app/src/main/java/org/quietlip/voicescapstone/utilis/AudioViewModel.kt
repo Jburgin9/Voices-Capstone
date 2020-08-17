@@ -8,9 +8,9 @@ import java.util.*
 
 
 class AudioViewModel(private val audioModel: AudioModel){
-    init {
-        val storeRef : StorageReference
-    }
+//    init {
+//        val storeRef : StorageReference
+//    }
 
     //TODO: convert to java code in audiomodel file
     fun getUserName(): String{

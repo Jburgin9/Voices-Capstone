@@ -5,7 +5,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,7 +18,6 @@ import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.FeedAdapter;
-import org.quietlip.voicescapstone.utilis.FeedSwipeDelete;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,10 +76,8 @@ public class FeedActivity extends BaseActivity {
 
                                                     }
                                                     feedAdapter = new FeedAdapter(feedAudioList);
-                                                    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new FeedSwipeDelete(feedAdapter, getApplicationContext()));
                                                     recyclerView.setAdapter(feedAdapter);
-                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                                    itemTouchHelper.attachToRecyclerView(recyclerView);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));;
                                                 } else {
                                                     Log.d("help", "Error getting documents: ", task.getException());
 

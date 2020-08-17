@@ -1,7 +1,5 @@
 package org.quietlip.voicescapstone.views;
 
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,9 +9,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
 
-import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,9 +27,7 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
-import org.quietlip.voicescapstone.utilis.Helper;
 import org.quietlip.voicescapstone.utilis.SetUserTask;
-import org.quietlip.voicescapstone.utilis.VoicesSwipeDelete;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,16 +107,11 @@ public class ProfileActivity extends BaseActivity {
                                         document.get("title").toString(), instance.getCurrentUser(),
                                         document.get("audioId").toString(), document.getId()));
                             }
-                        } else {
                             Collections.sort(audioList);
                         }
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                        ItemTouchHelper itemTouchHelper =
-                                new ItemTouchHelper(new VoicesSwipeDelete(voicesAdapter,
-                                        getApplicationContext()));
-                        itemTouchHelper.attachToRecyclerView(recyclerView);
                     }
                 });
     }

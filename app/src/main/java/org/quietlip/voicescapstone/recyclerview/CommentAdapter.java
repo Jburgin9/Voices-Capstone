@@ -58,7 +58,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> impl
         return commentList.size();
     }
 
-    public void deleteItem(int position) {
+    private void deleteItem(int position) {
         AudioModel recentlyDeletedItem = commentList.get(position);
         int recentlyDeletedItemPosition = position;
 
