@@ -5,6 +5,9 @@ import android.content.Context;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.snackbar.Snackbar;
 
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
+
 public class Helper {
     private static Helper instance;
     private Snackbar snackie;

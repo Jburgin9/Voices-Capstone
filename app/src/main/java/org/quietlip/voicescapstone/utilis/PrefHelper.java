@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class PrefHelper {
-    private static PrefHelper instance;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private Context context;
 
     public PrefHelper(Context context){
-        this.context = context;
         sharedPreferences = context.getSharedPreferences("savedUser", Context.MODE_PRIVATE);
     }
 
@@ -20,12 +17,12 @@ public class PrefHelper {
         editor.apply();
     }
 
-    public boolean isUserSignedIn(String uId){
-        return sharedPreferences.contains(uId);
+    public boolean isUserSignedIn(){
+        return sharedPreferences.contains("savedUserId");
     }
 
-    public String retrieveUser(String key){
-        return sharedPreferences.getString(key, "No user found");
+    public String retrieveUser(){
+        return sharedPreferences.getString("savedUserId", "No user found");
     }
 
     public void userLogout(){
@@ -34,9 +31,4 @@ public class PrefHelper {
         editor.apply();
     }
 
-//    public PrefHelper getInstance(){
-//        if(instance == null){
-//
-//        }
-//    }
 }

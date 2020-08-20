@@ -7,27 +7,27 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.core.app.ActivityCompat;
 
 import android.os.Bundle;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,8 +36,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
@@ -165,38 +163,38 @@ public class CommentActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
-                                    audioResult = task.getResult().toObject(AudioModel.class);
-                                    UserModel user = audioResult.getUser();
-                                    viewModel = new AudioViewModel(audioResult);
-                                    user.getUserId();
-                                    getColor();
-                                    parentUsername.setText(user.getUserName());
-                                    parentTitle.setText((audioResult.getTitle()));
-                                    Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
-                                    audioId = audioResult.getAudioId();
-                                    parentTime.setText(viewModel.getTimeStamp());
-                                    parentPlay.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            stRef = FirebaseStorage.getInstance().getReference(user.getUserId()).child("audio").child(audioId);
-                                            stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                @Override
-                                                public void onSuccess(Uri uri) {
-                                                    if (mPlay) {
-                                                        parentPlay.setImageResource(R.drawable.ic_stopp);
-                                                        startPlayingParent(uri);
-                                                        changeSeekBar();
-                                                    } else {
-                                                        parentPlay.setImageResource(R.drawable.play_button);
-                                                        stopParentPlayer();
-                                                    }
-                                                    mPlay = !mPlay;
+                                audioResult = task.getResult().toObject(AudioModel.class);
+                                UserModel user = audioResult.getUser();
+                                viewModel = new AudioViewModel(audioResult);
+                                user.getUserId();
+                                getColor();
+                                parentUsername.setText(user.getUserName());
+                                parentTitle.setText((audioResult.getTitle()));
+                                Picasso.get().load(user.getImageUrl()).fit().into(parentImage);
+                                audioId = audioResult.getAudioId();
+                                parentTime.setText(viewModel.getTimeStamp());
+                                parentPlay.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        stRef = FirebaseStorage.getInstance().getReference(user.getUserId()).child("audio").child(audioId);
+                                        stRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                if (mPlay) {
+                                                    parentPlay.setImageResource(R.drawable.ic_stopp);
+                                                    startPlayingParent(uri);
+                                                    changeSeekBar();
+                                                } else {
+                                                    parentPlay.setImageResource(R.drawable.play_button);
+                                                    stopParentPlayer();
                                                 }
-                                            });
-                                        }
-                                    });
-                                }
+                                                mPlay = !mPlay;
+                                            }
+                                        });
+                                    }
+                                });
                             }
+                        }
 
                     });
         }
@@ -225,15 +223,15 @@ public class CommentActivity extends BaseActivity {
 
     private void playbackAudio() {
         commentRecordingPlay.setOnClickListener(v -> {
-                if (mPlay) {
-                    commentRecordingPlay.setImageResource(R.drawable.ic_stopp);
-                    startCommentPlayback();
-                    commentPlayer.setOnCompletionListener(mp -> commentRecordingPlay.setImageResource(R.drawable.play_button));
-                } else {
-                    commentRecordingPlay.setImageResource(R.drawable.play_button);
-                    stopPlaying();
-                }
-                mPlay = !mPlay;
+            if (mPlay) {
+                commentRecordingPlay.setImageResource(R.drawable.ic_stopp);
+                startCommentPlayback();
+                commentPlayer.setOnCompletionListener(mp -> commentRecordingPlay.setImageResource(R.drawable.play_button));
+            } else {
+                commentRecordingPlay.setImageResource(R.drawable.play_button);
+                stopPlaying();
+            }
+            mPlay = !mPlay;
         });
     }
 
@@ -287,8 +285,9 @@ public class CommentActivity extends BaseActivity {
                                         commentList.add(new AudioModel(myList.get(i).get("uri").toString(), myList.get(i).get("title").toString(), user, myList.get(i).get("audioId").toString(), myList.get(i).getId()));
                                     }
                                 }
-                                if(audioResult != null){
-                                    commentAdapter = new CommentAdapter(commentList, audioResult.getAudioId());
+                                if (audioResult != null) {
+                                    commentAdapter = new CommentAdapter(commentList,
+                                            audioResult.getAudioId());
                                 }
                                 recyclerView.setAdapter(commentAdapter);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -310,29 +309,22 @@ public class CommentActivity extends BaseActivity {
         StorageReference filePath =
                 mStorageRef.child(currentUserUID).child(audioFolderName).child(String.valueOf(audioId));
         final Uri uri = Uri.fromFile(new File(audioFile));
-        filePath.putFile(uri).addOnFailureListener(e -> progressDialog.dismiss());
-        filePath.putFile(uri).addOnSuccessListener(taskSnapshot ->  {
-                AudioModel audioModel = new AudioModel(uri.toString(),
-                        titleInput.getText().toString(), CurrentUserManager.getInstance().getCurrentUser(),
-                        audioId, "");
-                db.collection(users).document(userId).collection("audio").document(currentAudioId).collection("commentlist")
-                        .document(audioId)
-                        .set(audioModel)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                stopRecording();
-                                retrieveComments();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("test", "Error adding document", e);
-                            }
-                        });
-                progressDialog.dismiss();
-        });
+        filePath.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            AudioModel audioModel = new AudioModel(uri.toString(),
+                    titleInput.getText().toString(),
+                    CurrentUserManager.getInstance().getCurrentUser(),
+                    audioId, "");
+            db.collection(users).document(userId).collection("audio")
+                    .document(currentAudioId).collection("commentlist")
+                    .document(audioId)
+                    .set(audioModel)
+                    .addOnSuccessListener(aVoid -> {
+                        stopRecording();
+                        retrieveComments();
+                    })
+                    .addOnFailureListener(e -> Log.w("test", "Error adding document", e));
+            progressDialog.dismiss();
+        }).addOnFailureListener(e -> progressDialog.dismiss());
     }
 
     @Override

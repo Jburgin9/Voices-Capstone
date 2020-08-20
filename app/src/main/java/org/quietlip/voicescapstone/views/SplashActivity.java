@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
+import org.quietlip.voicescapstone.utilis.PrefHelper;
 import org.quietlip.voicescapstone.utilis.SetUserTask;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -26,22 +27,22 @@ public class SplashActivity extends AppCompatActivity {
     private GifImageView splash_image;
     private FirebaseAuth loginAuth;
     private SharedPreferences sharedPreferences;
+    private PrefHelper prefHelper;
     private SetUserTask userTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        prefHelper = new PrefHelper(this);
         voicesHeader = findViewById(R.id.voices_header);
         splash_image = findViewById(R.id.gifImageView);
         userTask = new SetUserTask(this);
 
         loginAuth = FirebaseAuth.getInstance();
-        sharedPreferences = this.getSharedPreferences("savedUser", MODE_PRIVATE);
         int secondsDelayed = 1;
-        if (sharedPreferences.contains("userId")) {
-            String retrievedUser = sharedPreferences.getString("userId", "error");
-//            userTask.execute(retrievedUser);
+        if(prefHelper.isUserSignedIn()){
+            CurrentUserManager.getInstance().setUser(prefHelper.retrieveUser());
             startActivity(new Intent(SplashActivity.this,
                     ProfileActivity.class));
         } else {

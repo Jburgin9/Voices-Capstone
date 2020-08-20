@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.rpc.Help;
 import com.squareup.picasso.Picasso;
 
 import org.quietlip.voicescapstone.R;
@@ -27,49 +29,44 @@ import org.quietlip.voicescapstone.models.AudioModel;
 import org.quietlip.voicescapstone.models.UserModel;
 import org.quietlip.voicescapstone.recyclerview.VoicesAdapter;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
-import org.quietlip.voicescapstone.utilis.SetUserTask;
+import org.quietlip.voicescapstone.utilis.Helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class ProfileActivity extends BaseActivity {
-    private static final String DOC_PHOTO = "Photos";
-
     private CircleImageView profile_pic;
     private TextView aboutME;
     private TextView userName;
     private ImageView play;
     private TextView title;
     private ImageView mic;
-    private Toolbar toolbar;
 
     private VoicesAdapter voicesAdapter;
     private RecyclerView recyclerView;
     private BottomNavigationView navigation;
-
-    private static String audioFile;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String currentUserUID = FirebaseAuth.getInstance().getUid();
-//    StorageReference storage = FirebaseStorage.getInstance().getReference(currentUserUID).child(DOC_PHOTO);
-    private SetUserTask userTask;
 
     private List<AudioModel> audioList;
     private CurrentUserManager instance;
+    private Helper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        helper = Helper.getInstance();
         instance = CurrentUserManager.getInstance();
-        userTask = new SetUserTask(this);
-
-            userTask.execute(currentUserUID);
-
-
         navigation = findViewById(R.id.bottom_nav);
         setBottomNav(navigation);
         profile_pic = findViewById(R.id.profile_image);
@@ -79,9 +76,10 @@ public class ProfileActivity extends BaseActivity {
         recyclerView = findViewById(R.id.recycler_view);
         title = findViewById(R.id.profile_title);
         play = findViewById(R.id.profile_play);
-        audioFile = getExternalCacheDir().getAbsolutePath();
+        helper.makeFirelog(this, "Preparing", "Wait");
+        Completable.timer(2000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(this::retrieveUserInfo);
         getListfromdb();
-        retrieveUserInfo();
     }
 
     private void retrieveUserInfo() {
@@ -92,15 +90,14 @@ public class ProfileActivity extends BaseActivity {
             userName.setText(user.getUserName());
             Picasso.get().load(user.getImageUrl()).into(profile_pic);
         }
+        helper.dismissFirelog();
     }
 
 
     private void getListfromdb() {
         db.collection("users").document(currentUserUID).collection("audio")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 audioList.add(new AudioModel(document.get("uri").toString(),
@@ -112,14 +109,6 @@ public class ProfileActivity extends BaseActivity {
                         voicesAdapter = new VoicesAdapter(audioList);
                         recyclerView.setAdapter(voicesAdapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    }
                 });
     }
-
-    public void setUser(){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        instance.setUser(auth.getUid());
-    }
-
-
 }

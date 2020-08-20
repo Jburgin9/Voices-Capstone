@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import org.quietlip.voicescapstone.R;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
+import org.quietlip.voicescapstone.utilis.PrefHelper;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText usernameInputET, passwordInputET;
@@ -36,12 +37,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private CoordinatorLayout coord;
     private ConnectivityManager conMgr;
     private NetworkInfo activeNetworkInfo;
+    private PrefHelper prefHelper;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        prefHelper = new PrefHelper(this);
         initViews();
         signUpBTN.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
@@ -86,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 String uid = FirebaseAuth.getInstance().getUid();
-                                sharedPref(uid);
+                                prefHelper.storeUser(uid);
                                 CurrentUserManager.getInstance().setUser(uid);
                                 startActivity(new Intent(LoginActivity.this,
                                         ProfileActivity.class));
@@ -103,10 +106,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void sharedPref(String userId) {
-        SharedPreferences sharedPreferences = this.getSharedPreferences("savedUser", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("userId", userId);
-        editor.apply();
-    }
+
 }
