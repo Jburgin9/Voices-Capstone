@@ -12,16 +12,17 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.utilis.PrefHelper;
 
 public abstract class BaseActivity extends AppCompatActivity {
-
+    private PrefHelper prefHelper;
     private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
+        prefHelper = new PrefHelper(this);
 
     }
 
@@ -53,10 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     case R.id.logout_tab:
                         Intent logoutIntent = new Intent(BaseActivity.this, LoginActivity.class);
                         FirebaseAuth.getInstance().signOut();
-                        SharedPreferences prefs = getSharedPreferences("savedUser", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.clear();
-                        editor.apply();
+                        prefHelper.userLogout();
                         startActivity(logoutIntent);
                         break;
                 }
