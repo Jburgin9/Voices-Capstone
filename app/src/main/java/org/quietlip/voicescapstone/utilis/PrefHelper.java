@@ -11,7 +11,7 @@ public class PrefHelper {
         sharedPreferences = context.getSharedPreferences("savedUser", Context.MODE_PRIVATE);
     }
 
-    public void storeUser(String uId){
+    public void setUser(String uId){
         editor = sharedPreferences.edit();
         editor.putString("savedUserId", uId);
         editor.apply();

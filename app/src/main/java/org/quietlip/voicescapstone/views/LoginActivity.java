@@ -2,7 +2,6 @@ package org.quietlip.voicescapstone.views;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,20 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
 
 import org.quietlip.voicescapstone.R;
+import org.quietlip.voicescapstone.utilis.AuthHelper;
 import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 import org.quietlip.voicescapstone.utilis.PrefHelper;
@@ -37,7 +35,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private CoordinatorLayout coord;
     private ConnectivityManager conMgr;
     private NetworkInfo activeNetworkInfo;
-    private PrefHelper prefHelper;
+    private AuthHelper authHelper;
 
 
     @Override
@@ -50,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginBtn.setOnClickListener(this);
         conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         activeNetworkInfo = conMgr.getActiveNetworkInfo();
+        authHelper = new AuthHelper(this);
     }
 
     //initViews
@@ -83,13 +82,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
             helper.makeFirelog(this, "", "Loading . . .");
+            if(authHelper.canUserLogin(username, password)){
+                startActivity(new Intent(LoginActivity.this,
+                        ProfileActivity.class));
+            } else {
+                helper.makeSnackie(coord, "Failure");
+            }
+
             loginAuth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 String uid = FirebaseAuth.getInstance().getUid();
-                                prefHelper.storeUser(uid);
                                 CurrentUserManager.getInstance().setUser(uid);
                                 startActivity(new Intent(LoginActivity.this,
                                         ProfileActivity.class));

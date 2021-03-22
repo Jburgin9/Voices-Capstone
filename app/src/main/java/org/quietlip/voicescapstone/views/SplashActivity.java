@@ -25,8 +25,6 @@ import pl.droidsonroids.gif.GifImageView;
 public class SplashActivity extends AppCompatActivity {
     private ImageView voicesHeader;
     private GifImageView splash_image;
-    private FirebaseAuth loginAuth;
-    private SharedPreferences sharedPreferences;
     private PrefHelper prefHelper;
     private SetUserTask userTask;
 
@@ -39,8 +37,8 @@ public class SplashActivity extends AppCompatActivity {
         splash_image = findViewById(R.id.gifImageView);
         userTask = new SetUserTask(this);
 
-        loginAuth = FirebaseAuth.getInstance();
-        int secondsDelayed = 1;
+        //secondsDelayed * 2500 in else run method
+//        int secondsDelayed = 1;
         if(prefHelper.isUserSignedIn()){
             CurrentUserManager.getInstance().setUser(prefHelper.retrieveUser());
             startActivity(new Intent(SplashActivity.this,
@@ -52,7 +50,7 @@ public class SplashActivity extends AppCompatActivity {
                             LoginActivity.class));
                     finish();
                 }
-            }, secondsDelayed * 2500);
+            }, 2500);
         }
     }
 }
