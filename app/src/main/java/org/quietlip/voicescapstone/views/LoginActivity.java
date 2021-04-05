@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +28,7 @@ import org.quietlip.voicescapstone.utilis.CurrentUserManager;
 import org.quietlip.voicescapstone.utilis.Helper;
 import org.quietlip.voicescapstone.utilis.PrefHelper;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, AuthHelper.LoginCallback {
     private EditText usernameInputET, passwordInputET;
     private Button loginBtn, signUpBTN;
     private FirebaseAuth loginAuth;
@@ -42,7 +43,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        prefHelper = new PrefHelper(this);
         initViews();
         signUpBTN.setOnClickListener(this);
         loginBtn.setOnClickListener(this);
@@ -70,6 +70,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(this, RegisterActivity.class));
                 break;
             case R.id.login_btn:
+                AuthHelper authHelper = new AuthHelper(this);
+                helper.makeFirelog(this, "", "Loading . . .");
                 login();
                 break;
         }
@@ -81,35 +83,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = passwordInputET.getText().toString().trim();
 
         if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-            helper.makeFirelog(this, "", "Loading . . .");
-            if(authHelper.canUserLogin(username, password)){
+            if (authHelper.canUserLogin(username, password) == 1) {
                 startActivity(new Intent(LoginActivity.this,
                         ProfileActivity.class));
+                helper.dismissFirelog();
             } else {
                 helper.makeSnackie(coord, "Failure");
+                helper.dismissFirelog();
             }
-
-            loginAuth.signInWithEmailAndPassword(username, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                String uid = FirebaseAuth.getInstance().getUid();
-                                CurrentUserManager.getInstance().setUser(uid);
-                                startActivity(new Intent(LoginActivity.this,
-                                        ProfileActivity.class));
-                            } else {
-                                helper.dismissFirelog();
-                                helper.makeSnackie(coord, "Failure");
-                            }
-                        }
-                    });
-        } else if (TextUtils.isEmpty(username)) {
-            helper.makeSnackie(coord, "please enter username");
-        } else if (TextUtils.isEmpty(password)) {
-            helper.makeSnackie(coord, "please enter password");
         }
     }
 
+    @Override
+    public void canUserLogin(boolean canUserLogin) {
+        String username = usernameInputET.getText().toString().trim();
+        String password = passwordInputET.getText().toString().trim();
 
+        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+            authHelper.canUserLogin(username, password);
+//            new Runnable(new Hand).run();
+            if (canUserLogin) {
+                startActivity(new Intent(LoginActivity.this,
+                        ProfileActivity.class));
+                helper.dismissFirelog();
+            } else {
+                helper.makeSnackie(coord, "Failure");
+                helper.dismissFirelog();
+            }
+        }
+    }
 }
